@@ -28,41 +28,35 @@ public class UserController {
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<ApiResponse<UserResponse>> getMyProfile(){
-    	// Extracting username from SearchContext which is when user is logged in
-    	String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    	log.info("Fetching profile for username={}", username);
-    	UserResponse userResponse = userService.getUserByUsername(username);
-    	
-    	return ResponseEntity.ok(new ApiResponse<>(true, "Profile Fetched Successfully", userResponse));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Fetching profile for username={}", username);
+        UserResponse userResponse = userService.getUserByUsername(username);
+        return ResponseEntity.ok(ApiResponse.success("Profile fetched successfully", userResponse));
     }
-    
-    
-    // Update Profile of Logged In USER?ADMIN
+
+    // Update Profile of Logged In USER/ADMIN
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PutMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> updateProfile(@RequestBody UserRequest request){
-    	UserResponse updateUser = userService.updateMyProfle(request);
-    	
-    	return ResponseEntity.ok(new ApiResponse<>(true, "Profile Updated Successfully", updateUser));
+        UserResponse updatedUser = userService.updateMyProfle(request);
+        return ResponseEntity.ok(ApiResponse.success("Profile updated successfully", updatedUser));
     }
-    
-    // GET ALL USERS with optional pagination
+
+    // GET ALL USERS
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ApiResponse<List<UserResponse>> getAllUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        List<UserResponse> users = userService.getAllUsers(); // For now, full list. Can add Pageable in future
-        return new ApiResponse<>(true, "Users fetched successfully", users);
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
+        List<UserResponse> users = userService.getAllUsers();
+        return ResponseEntity.ok(ApiResponse.success("Users fetched successfully", users));
     }
 
     // GET USERS BY ROLE
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/search")
-    public ApiResponse<List<UserResponse>> getUserByRole(
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getUserByRole(
             @RequestParam(value = "role", required = false, defaultValue = "USER") Role role) {
         List<UserResponse> users = userService.getByRole(role);
-        return new ApiResponse<>(true, "Users fetched successfully", users);
+        return ResponseEntity.ok(ApiResponse.success("Users fetched successfully", users));
     }
 
     // GET USER BY ID
@@ -70,7 +64,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable String userId) {
         UserResponse userResponse = userService.getUserById(userId);
-        return ResponseEntity.ok(new ApiResponse<>(true, "User fetched successfully", userResponse));
+        return ResponseEntity.ok(ApiResponse.success("User fetched successfully", userResponse));
     }
 
     // UPDATE USER
@@ -79,7 +73,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(@PathVariable String userId,
                                                                 @RequestBody UserRequest userRequest) {
         UserResponse updatedUser = userService.updateUser(userId, userRequest);
-        return ResponseEntity.ok(new ApiResponse<>(true, "User updated successfully", updatedUser));
+        return ResponseEntity.ok(ApiResponse.success("User updated successfully", updatedUser));
     }
 
     // DELETE USER
@@ -87,6 +81,6 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
-        return ResponseEntity.ok(new ApiResponse<>(true, "User deleted successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("User deleted successfully"));
     }
 }
