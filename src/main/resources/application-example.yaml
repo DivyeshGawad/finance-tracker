@@ -35,4 +35,4 @@ server:
 
 cleanup:
   unverified:
-    days:7
+    days: 7
