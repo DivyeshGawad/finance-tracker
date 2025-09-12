@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -61,9 +60,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                         .collect(Collectors.toSet());
 
+                // ✅ Use CustomUserDetails as principal
+                CustomUserDetails principal = new CustomUserDetails(
+                        user.getUserId(),
+                        user.getUsername(),
+                        null, // password not needed here
+                        authorities
+                );
                 // Set authentication
                 UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                        new UsernamePasswordAuthenticationToken(principal, null, authorities);
+
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
             } catch (io.jsonwebtoken.ExpiredJwtException ex) {

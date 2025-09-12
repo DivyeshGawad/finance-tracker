@@ -19,6 +19,7 @@ import com.demo.finance_tracker_backend.event.EmailChangeEvent;
 import com.demo.finance_tracker_backend.exception.EmailAlreadyExistsException;
 import com.demo.finance_tracker_backend.exception.UserNotFoundException;
 import com.demo.finance_tracker_backend.repository.UserRepository;
+import com.demo.finance_tracker_backend.security.CurrentUser;
 import com.demo.finance_tracker_backend.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService {
 	public UserResponse updateMyProfle(UserRequest request) {
 
 		// Get the username from SecurityContext
-		String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+		String currentUsername = CurrentUser.getUsername();
 
 		UserEntity user = userRepository.findByUsername(currentUsername)
 				.orElseThrow(() -> new UserNotFoundException("User Not found with username:- " + currentUsername));

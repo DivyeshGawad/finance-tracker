@@ -57,7 +57,8 @@ public class JwtUtil {
     }
 
     // Extract roles
-    public Set<String> extractRoles(String token) {
+    @SuppressWarnings("unchecked")
+	public Set<String> extractRoles(String token) {
         List<String> roles = extractClaims(token).get("roles", List.class);
         return new HashSet<>(roles);
     }

@@ -4,6 +4,7 @@ import com.demo.finance_tracker_backend.dto.ApiResponse;
 import com.demo.finance_tracker_backend.dto.UserRequest;
 import com.demo.finance_tracker_backend.dto.UserResponse;
 import com.demo.finance_tracker_backend.enums.Role;
+import com.demo.finance_tracker_backend.security.CurrentUser;
 import com.demo.finance_tracker_backend.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class UserController {
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<ApiResponse<UserResponse>> getMyProfile(){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = CurrentUser.getUsername();
         log.info("Fetching profile for username={}", username);
         UserResponse userResponse = userService.getUserByUsername(username);
         return ResponseEntity.ok(ApiResponse.success("Profile fetched successfully", userResponse));
