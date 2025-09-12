@@ -30,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private ObjectMapper objectMapper;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -79,15 +80,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
     
     private void handleJwtError(HttpServletResponse response, String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.getWriter().write(
-                new ObjectMapper().writeValueAsString(
-                        new ApiResponse<>(false, message, null)
-                )
+                objectMapper.writeValueAsString(ApiResponse.error(message))
         );
     }
 }
