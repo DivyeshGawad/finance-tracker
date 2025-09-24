@@ -1,5 +1,6 @@
 package com.demo.finance_tracker_backend.serviceImpl;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -58,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
 				.username(request.getUsername()).password(passwordEncoder.encode(request.getPassword()))
 				.phone(request.getPhone()).role(assignedRole)
 				.verificationToken(UUID.randomUUID().toString()).tokenExpiry(LocalDateTime.now().plusHours(24))
-				.createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build();
+				.createdAt(Instant.now()).updatedAt(Instant.now()).build();
 
 		UserEntity savedUser = userRepository.save(user);
 
@@ -77,7 +78,7 @@ public class AuthServiceImpl implements AuthService {
 		user.setVerified(true);
 		user.setVerificationToken(null);
 		user.setTokenExpiry(null);
-		user.setUpdatedAt(LocalDateTime.now());
+		user.setUpdatedAt(Instant.now());
 
 		userRepository.save(user);
 

@@ -1,5 +1,6 @@
 package com.demo.finance_tracker_backend.serviceImpl;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final ApplicationEventPublisher eventPublisher;
+	private final CurrentUser currentUser;
 	
 	// Get User By userId
 	@Override
@@ -55,7 +57,7 @@ public class UserServiceImpl implements UserService {
 	public UserResponse updateMyProfle(UserRequest request) {
 
 		// Get the username from SecurityContext
-		String currentUsername = CurrentUser.getUsername();
+		String currentUsername = currentUser.getUsername();
 
 		UserEntity user = userRepository.findByUsername(currentUsername)
 				.orElseThrow(() -> new UserNotFoundException("User Not found with username:- " + currentUsername));
@@ -74,7 +76,7 @@ public class UserServiceImpl implements UserService {
 			 user.setTokenVersion(user.getTokenVersion() + 1); // Invalidate old JWTs
 		}
 
-		user.setUpdatedAt(LocalDateTime.now());
+		user.setUpdatedAt(Instant.now());
 
 		log.info("User Profile {} updated", user.getUsername());
 		UserEntity updatedUser = userRepository.save(user);
@@ -166,7 +168,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		// Update audit info
-		user.setUpdatedAt(LocalDateTime.now());
+		user.setUpdatedAt(Instant.now());
 		
 		// Updating and sending verification code to new updated email
 		handleEmailChange(user, request.getEmail());

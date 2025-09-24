@@ -38,7 +38,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        // ✅ Missing or invalid header
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            handleJwtError(response, "JWT token is missing, please login first");
+            return;
+        }
             String token = authHeader.substring(7);
 
             try {
@@ -83,10 +87,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 handleJwtError(response, "Invalid JWT token");
                 return;
             }
-        }
+        
 
         filterChain.doFilter(request, response);
     }
+    
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+
+        // Public endpoints that don't need JWT
+        return path.startsWith("/api/auth/login")
+                || path.startsWith("/api/auth/register")
+                || path.startsWith("/api/auth/forgot-username")
+                || path.startsWith("/api/auth/forgot-password")
+                || path.startsWith("/api/auth/reset-password");
+    }
+
     
     private void handleJwtError(HttpServletResponse response, String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

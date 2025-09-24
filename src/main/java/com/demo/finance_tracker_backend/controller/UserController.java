@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,12 +23,13 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
+    private final CurrentUser currentUser;
+    
     // Get Profile of Logged in USER/ADMIN
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<ApiResponse<UserResponse>> getMyProfile(){
-        String username = CurrentUser.getUsername();
+        String username = currentUser.getUsername();
         log.info("Fetching profile for username={}", username);
         UserResponse userResponse = userService.getUserByUsername(username);
         return ResponseEntity.ok(ApiResponse.success("Profile fetched successfully", userResponse));

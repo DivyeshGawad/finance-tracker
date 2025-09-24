@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import com.demo.finance_tracker_backend.enums.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -22,10 +22,9 @@ public class UserResponse {
 	private Role role;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
-	private LocalDateTime updatedAt;
+	private Instant createdAt;
 
-	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
-	private LocalDateTime createdAt;
+	private Instant updatedAt;
 
 }

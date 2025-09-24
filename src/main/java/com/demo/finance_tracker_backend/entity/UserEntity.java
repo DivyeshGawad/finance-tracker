@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.demo.finance_tracker_backend.enums.Role;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,8 +21,8 @@ import java.time.LocalDateTime;
 public class UserEntity {
 
     @Id
-    private String id;   // MongoDB _id
-
+    private String id;
+    
     private String userId;   // Custom numeric ID (derived from ObjectId)
 
     private String firstName;
@@ -53,7 +54,7 @@ public class UserEntity {
     @Builder.Default
     private Integer tokenVersion = 0; // default 0
     
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 }
