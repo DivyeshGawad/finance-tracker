@@ -1,0 +1,87 @@
+# =========================
+# Maven / Java / Spring Boot
+# =========================
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Spring Boot specific
+spring.log
+*.pid
+
+# Generated sources
+target/generated-sources/
+target/generated-test-sources/
+
+# =========================
+# IDEs
+# =========================
+# Eclipse
+.settings/
+bin/
+
+# IntelliJ IDEA
+out/
+*.idea/
+*.ipr
+*.iws
+*.iml
+*.launch
+
+# VS Code
+.vscode/
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+*.nb-gradle/
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =========================
+# Test / Coverage
+# =========================
+coverage/
+*.exec
+*.jacoco
+*.test
+test-output/
+
+# =========================
+# Environment / Config
+# =========================
+.env
+.env.*
+# Ignore Spring Boot config files with secrets
+src/main/resources/application*.yml
+src/main/resources/application*.properties
+
+# =========================
+# Frontend (Angular) future-proofing
+# =========================
+# Node modules
+node_modules/
+
+# Angular build outputs
+dist/
+out-tsc/
+.angular/
+/.metadata/
