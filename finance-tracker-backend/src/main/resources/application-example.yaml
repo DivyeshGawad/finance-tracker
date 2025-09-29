@@ -1,0 +1,42 @@
+spring:
+  mail:
+    host: smtp.example.com
+    port: 587
+    username: your_email@example.com
+    password: your_password
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: finance_tracker
+
+  jackson:
+    time-zone: Asia/Kolkata
+    date-format: dd-MM-yyyy HH:mm:ss
+ 
+finance:
+  mail:
+    support:
+      email: your_email@example.com
+      name: "Finance Tracker Support"
+    notifications:
+      email: your_email@example.com
+      name: "Finance Tracker Notifications"
+    reports:
+      email: your_email@example.com
+      name: "Finance Tracker Reports"
+
+jwt:
+  secret: YOUR_SECRET_KEY
+  expiration: 1800000 # 30 minutes in ms
+
+server:
+  port: 8080
+
+cleanup:
+  unverified:
+    days: 7
