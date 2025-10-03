@@ -36,14 +36,10 @@ public interface CategoryRepository extends MongoRepository<CategoryEntity, Stri
     // For Service level filtering
     List<CategoryEntity> findByUserIdAndType(String userId, CategoryType type);
     
-//    // Search with Pagination (includes default and user categories)
-//    @Query("{ '$and': [ "
-//    		+ " { '$or': [ { 'isDefault': true },{ 'userId': ?0 } ] },"
-//    		+ " { '$or': { 'name': { $regex: ?1, $options: 'i' } },"
-//    		+ " { '$or': { 'type': { $regex: ?2, $options: 'i' } }"
-//    		+ "] }")
-//    Page<CategoryEntity> searchCategories(String userId, String name, String type, Pageable pageable);
-//    
+    // ✅ Fetch ALL categories (default + user’s) — useful for reports
+    @Query("{ '$or': [ { 'isDefault': true }, { 'userId': ?0 } ] }")
+    List<CategoryEntity> findAllForUser(String userId);
+    
     // Search default + user categories with optional name/type filters
     @Query("{ '$and': [ " +
             "  { '$or': [ { 'isDefault': true }, { 'userId': ?0 } ] }, " +
