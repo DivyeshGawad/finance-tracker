@@ -10,8 +10,10 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +35,18 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("Validation Failed", errors));
 	}
+	
+	 @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	    public ResponseEntity<ApiResponse<String>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+	        String message = "Invalid value for parameter '" + ex.getName() + "'. Expected type: " + ex.getRequiredType().getSimpleName();
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(message));
+	    }
+
+	    @ExceptionHandler(DateTimeParseException.class)
+	    public ResponseEntity<ApiResponse<String>> handleDateParse(DateTimeParseException ex) {
+	        String message = "Invalid date format. Please use yyyy-MM-dd and ensure valid calendar dates.";
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(message));
+	    }
 	
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ApiResponse<String>> handleIllegalArgumentsErrors(IllegalArgumentException ex) {
