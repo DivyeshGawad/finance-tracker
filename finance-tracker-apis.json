@@ -1188,10 +1188,6 @@
               ],
               "query": [
                 {
-                  "key": "userId",
-                  "value": "123"
-                },
-                {
                   "key": "startDate",
                   "value": "2025-09-01"
                 },
