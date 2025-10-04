@@ -1164,6 +1164,52 @@
               ]
             }
           }
+        },
+        {
+          "name": "Top Categories Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/top-categories?userId=123&startDate=2025-09-01&endDate=2025-09-30&type=EXPENSE&topN=3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "top-categories"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "123"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2025-09-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-09-30"
+                },
+                {
+                  "key": "type",
+                  "value": "EXPENSE"
+                },
+                {
+                  "key": "topN",
+                  "value": "3"
+                }
+              ]
+            }
+          }
         }
       ]
     }
