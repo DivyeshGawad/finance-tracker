@@ -1036,7 +1036,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
+                "value": "Bearer {{jwtToken}}",
                 "type": "text"
               }
             ],
@@ -1070,7 +1070,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
+                "value": "Bearer {{jwtToken}}",
                 "type": "text"
               }
             ],
@@ -1104,7 +1104,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
+                "value": "Bearer {{jwtToken}}",
                 "type": "text"
               }
             ],
@@ -1138,7 +1138,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{token}}",
+                "value": "Bearer {{jwtToken}}",
                 "type": "text"
               }
             ],
