@@ -605,7 +605,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"CAT-12345\",\n  \"budgetAmount\": 10000.0,\n  \"startDate\": \"2025-09-01\",\n  \"endDate\": \"2025-09-30\",\n  \"note\": \"September Budget\"\n}"
+              "raw": "{\n  \"name\": \"Budget Name\",\n  \"categoryId\": \"CAT-12345\",\n  \"budgetAmount\": 10000.0,\n  \"startDate\": \"2025-09-01\",\n  \"endDate\": \"2025-09-30\",\n  \"note\": \"September Budget\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/budgets",
@@ -635,7 +635,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"CAT-12345\",\n  \"budgetAmount\": 12000.0,\n  \"startDate\": \"2025-09-01\",\n  \"endDate\": \"2025-09-30\",\n  \"note\": \"Updated September Budget\"\n}"
+              "raw": "{\n  \"name\": \"Updated Budget Name\",\n  \"categoryId\": \"CAT-12345\",\n  \"budgetAmount\": 12000.0,\n  \"startDate\": \"2025-09-01\",\n  \"endDate\": \"2025-09-30\",\n  \"note\": \"Updated September Budget\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/budgets/{{budgetId}}",
@@ -748,7 +748,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/budgets/search?categoryId=CAT-12345&minBudgetAmount=5000&maxBudgetAmount=15000&startDate=2025-09-01&endDate=2025-09-30&noteKeyword=September&page=0&size=5&sortBy=budgetId&direction=asc",
+              "raw": "{{baseUrl}}/api/budgets/search?name=Budget&categoryId=CAT-12345&minBudgetAmount=5000&maxBudgetAmount=15000&startDate=2025-09-01&endDate=2025-09-30&noteKeyword=September&page=0&size=5&sortBy=budgetId&direction=asc",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -758,6 +758,10 @@
                 "search"
               ],
               "query": [
+                {
+                  "key":"name",
+                  "value":"Budget"
+                },
                 {
                   "key": "categoryId",
                   "value": "CAT-12345"
