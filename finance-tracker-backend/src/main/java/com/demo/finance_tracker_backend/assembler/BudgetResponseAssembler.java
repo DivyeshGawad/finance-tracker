@@ -50,6 +50,7 @@ public class BudgetResponseAssembler implements RepresentationModelAssembler<Bud
         BudgetResponse response = BudgetResponse.builder()
                 .budgetId(entity.getBudgetId())
                 .userId(entity.getUserId())
+                .name(entity.getName())
                 .categoryId(entity.getCategoryId())
                 .categoryName(categoryName)
                 .categoryType(categoryType)

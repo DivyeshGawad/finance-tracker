@@ -153,6 +153,7 @@ public class ReportServiceImpl implements ReportService {
 
             response.add(new ReportBudgetResponse(
                     budget.getBudgetId(),
+                    budget.getName(),
                     budget.getCategoryId(),
                     categoryName,
                     spent,

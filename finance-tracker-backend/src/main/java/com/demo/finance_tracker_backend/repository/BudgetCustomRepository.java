@@ -25,6 +25,7 @@ public class BudgetCustomRepository {
 	
 	public Page<BudgetEntity> searchBudgets(
 			String userId,
+			String name,
 			String categoryId,
 			Double minAmount,
 			Double maxAmount,
@@ -36,7 +37,10 @@ public class BudgetCustomRepository {
 		List<Criteria> criteriaList = new ArrayList<>();
 		
 		criteriaList.add(Criteria.where("userId").is(userId));
-		
+
+		if(name != null && !name.isBlank()) {
+			criteriaList.add(Criteria.where("name").is(name));
+		}
 		if(categoryId != null && !categoryId.isBlank()) {
 			criteriaList.add(Criteria.where("categoryId").is(categoryId));
 		}

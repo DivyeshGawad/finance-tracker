@@ -28,6 +28,8 @@ public class BudgetEntity {
 	private String budgetId;
 
 	private String userId;
+	
+	private String name;
 
 	private String categoryId;
 

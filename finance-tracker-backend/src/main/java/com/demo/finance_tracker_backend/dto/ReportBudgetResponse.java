@@ -14,6 +14,7 @@ import lombok.Data;
 public class ReportBudgetResponse {
 
 	private String budgetId;
+	private String name;
 	private String categoryId;
 	private String categoryName;
 	private double spentAmount;

@@ -54,9 +54,11 @@ public class BudgetServiceImpl implements BudgetService {
 		}
 		
 		BudgetEntity budget = BudgetEntity.builder().budgetId(IdGeneratorUtil.generatePrefixedId("BUD")).userId(userId)
-				.categoryId(request.getCategoryId()).budgetAmount(request.getBudgetAmount()).spendAmount(0.0)
+				.name(request.getName()).categoryId(request.getCategoryId()).budgetAmount(request.getBudgetAmount()).spendAmount(0.0)
 				.startDate(request.getStartDate()).endDate(request.getEndDate()).note(request.getNote()).build();
 
+		
+		log.info(budget.toString());
 		try {
 			budgetRepositpry.save(budget);
 		} catch (DuplicateKeyException e) {
@@ -87,7 +89,8 @@ public class BudgetServiceImpl implements BudgetService {
 							throw new IllegalArgumentException("Budgets can only be assigned to 'EXPENSE' Categories");
 						}
 		}
-
+		
+		budget.setName(request.getName());
 		budget.setCategoryId(request.getCategoryId());
 		budget.setBudgetAmount(request.getBudgetAmount());
 		budget.setStartDate(request.getStartDate());
@@ -144,7 +147,9 @@ public class BudgetServiceImpl implements BudgetService {
 	}
 
 	@Override
-	public PagedModel<BudgetResponse> searchBudgets(String userId,
+	public PagedModel<BudgetResponse> searchBudgets(
+			String name,
+			String userId,
             String categoryId,
             Double minBudgetAmount,
             Double maxBudgetAmount,
@@ -165,7 +170,7 @@ public class BudgetServiceImpl implements BudgetService {
 
 		Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size), sort);
 
-		Page<BudgetEntity> pageResult = budgetCustomRepository.searchBudgets(userId, categoryId, minBudgetAmount,
+		Page<BudgetEntity> pageResult = budgetCustomRepository.searchBudgets(name, userId, categoryId, minBudgetAmount,
 				maxBudgetAmount, startDate, endDate, safeNoteKeyword, pageable);
 
 		return pagedResourcesAssembler.toModel(pageResult, assembler);

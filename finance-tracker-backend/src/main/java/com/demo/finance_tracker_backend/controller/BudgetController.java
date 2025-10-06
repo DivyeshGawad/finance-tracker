@@ -43,6 +43,7 @@ public class BudgetController {
 		
 		BudgetResponse response = budgetService.createBudget(userId, request);
 		
+		log.info(response.toString());
 		return ResponseEntity.ok(ApiResponse.success("Budget Created Successfully", response));
 	}
 	
@@ -104,6 +105,7 @@ public class BudgetController {
 	@GetMapping("/search")
 	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	public ResponseEntity<ApiResponse<PagedModel<BudgetResponse>>> searchBudgets(
+			@RequestParam(required = false) String name,
 			@RequestParam(required = false) String categoryId,
 			@RequestParam(required = false) Double minBudgetAmount,
 			@RequestParam(required = false) Double maxBudgetAmount,
@@ -120,7 +122,7 @@ public class BudgetController {
 		LocalDate start = startDate != null ? LocalDate.parse(startDate) : null;
 		LocalDate end = endDate != null ? LocalDate.parse(endDate) : null;
 		
-		PagedModel<BudgetResponse> pagedModel = budgetService.searchBudgets(userId, categoryId, minBudgetAmount, maxBudgetAmount, start, end, noteKeyword, page, size, sortBy, direction);
+		PagedModel<BudgetResponse> pagedModel = budgetService.searchBudgets(name, userId, categoryId, minBudgetAmount, maxBudgetAmount, start, end, noteKeyword, page, size, sortBy, direction);
 		
 	    if (pagedModel.getMetadata().getTotalElements() == 0) {
 	        return ResponseEntity.ok(ApiResponse.error("Bidget Not Found.", null));

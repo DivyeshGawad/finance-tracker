@@ -23,6 +23,7 @@ public class BudgetResponse extends RepresentationModel<BudgetResponse> {
 
 	private String budgetId;
 	private String userId;
+	private String name;
 	private String categoryId;
 	private String categoryName;
 	private String categoryType;

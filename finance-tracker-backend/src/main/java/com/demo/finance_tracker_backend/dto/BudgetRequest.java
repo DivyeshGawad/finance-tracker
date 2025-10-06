@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class BudgetRequest {
 
+	@NotNull(message = "Name is required for a budget")
+	private String name;
+	
 	@NotNull(message = "Category is required for a budget")
 	private String categoryId;
 	
