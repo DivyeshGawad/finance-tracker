@@ -148,8 +148,8 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public PagedModel<BudgetResponse> searchBudgets(
-			String name,
 			String userId,
+			String name,
             String categoryId,
             Double minBudgetAmount,
             Double maxBudgetAmount,

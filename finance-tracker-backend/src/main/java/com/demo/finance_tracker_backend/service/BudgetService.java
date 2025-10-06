@@ -44,8 +44,8 @@ public interface BudgetService {
      * Search budgets with filters (date range, category, min/max amount, keyword in note)
      */
     PagedModel<BudgetResponse> searchBudgets(
-    		String name,
             String userId,
+            String name,
             String categoryId,
             Double minBudgetAmount,
             Double maxBudgetAmount,
