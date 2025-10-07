@@ -21,51 +21,58 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BudgetCustomRepository {
 
-	private final MongoTemplate mongoTemplate;
-	
-	public Page<BudgetEntity> searchBudgets(
-			String userId,
-			String name,
-			String categoryId,
-			Double minAmount,
-			Double maxAmount,
-			LocalDate startDate,
-			LocalDate endDate,
-			String note,
-			Pageable pageable
-			){
-		List<Criteria> criteriaList = new ArrayList<>();
-		
-		criteriaList.add(Criteria.where("userId").is(userId));
+    private final MongoTemplate mongoTemplate;
 
-		if(name != null && !name.isBlank()) {
-			criteriaList.add(Criteria.where("name").is(name));
-		}
-		if(categoryId != null && !categoryId.isBlank()) {
-			criteriaList.add(Criteria.where("categoryId").is(categoryId));
-		}
-		if(minAmount != null) {
-		        criteriaList.add(Criteria.where("budgetAmount").gte(minAmount));
-		}
-		if(maxAmount != null) {
-		        criteriaList.add(Criteria.where("budgetAmount").lte(maxAmount));
-		}
-		if(startDate != null) {
-			criteriaList.add(Criteria.where("startDate").gte(startDate));
-		}
-		if(endDate != null) {
-			criteriaList.add(Criteria.where("endDate").lte(endDate));
-		}
-		if (note != null && !note.isBlank()) {
-            criteriaList.add(Criteria.where("note")
-                    .regex(".*" + Pattern.quote(note) + ".*", "i"));
+    public Page<BudgetEntity> searchBudgets(
+            String userId,
+            String name,
+            String categoryId,
+            Double minAmount,
+            Double maxAmount,
+            LocalDate startDate,
+            LocalDate endDate,
+            String note,
+            Pageable pageable) {
+
+        List<Criteria> criteriaList = new ArrayList<>();
+
+        // Mandatory filter for user
+        criteriaList.add(Criteria.where("userId").is(userId));
+
+        if (name != null && !name.isBlank()) {
+            criteriaList.add(Criteria.where("name").regex(".*" + Pattern.quote(name) + ".*", "i"));
         }
-		Criteria finalCriteriaList = new Criteria().andOperator(criteriaList.toArray(new Criteria[0]));
-		Query query = new Query(finalCriteriaList).with(pageable);
-		
-		List<BudgetEntity> results = mongoTemplate.find(query, BudgetEntity.class);
-		long count = mongoTemplate.count((Query.query(finalCriteriaList)), BudgetEntity.class);
-		
-		return new PageImpl<>(results, pageable, count);
-	}
+
+        if (categoryId != null && !categoryId.isBlank()) {
+            criteriaList.add(Criteria.where("categoryId").is(categoryId));
+        }
+
+        if (minAmount != null) {
+            criteriaList.add(Criteria.where("budgetAmount").gte(minAmount));
+        }
+
+        if (maxAmount != null) {
+            criteriaList.add(Criteria.where("budgetAmount").lte(maxAmount));
+        }
+
+        if (startDate != null) {
+            criteriaList.add(Criteria.where("startDate").gte(startDate));
+        }
+
+        if (endDate != null) {
+            criteriaList.add(Criteria.where("endDate").lte(endDate));
+        }
+
+        if (note != null && !note.isBlank()) {
+            criteriaList.add(Criteria.where("note").regex(".*" + Pattern.quote(note) + ".*", "i"));
+        }
+
+        Criteria finalCriteria = new Criteria().andOperator(criteriaList.toArray(new Criteria[0]));
+        Query query = new Query(finalCriteria).with(pageable);
+
+        List<BudgetEntity> results = mongoTemplate.find(query, BudgetEntity.class);
+        long count = mongoTemplate.count(Query.query(finalCriteria), BudgetEntity.class);
+
+        return new PageImpl<>(results, pageable, count);
+    }
 }

@@ -1,8 +1,8 @@
 package com.demo.finance_tracker_backend.serviceImpl;
 
 import java.time.LocalDate;
-import java.util.regex.Pattern;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +18,9 @@ import com.demo.finance_tracker_backend.dto.BudgetRequest;
 import com.demo.finance_tracker_backend.dto.BudgetResponse;
 import com.demo.finance_tracker_backend.entity.BudgetEntity;
 import com.demo.finance_tracker_backend.entity.CategoryEntity;
+import com.demo.finance_tracker_backend.entity.UserEntity;
+import com.demo.finance_tracker_backend.enums.BudgetAlertType;
+import com.demo.finance_tracker_backend.event.BudgetAlertEvent;
 import com.demo.finance_tracker_backend.exception.ResourceNotFoundException;
 import com.demo.finance_tracker_backend.exception.UnauthorizedException;
 import com.demo.finance_tracker_backend.repository.BudgetCustomRepository;
@@ -39,25 +42,26 @@ public class BudgetServiceImpl implements BudgetService {
 	private final CategoryRepository categoryRepository;
 	private final BudgetResponseAssembler assembler;
 	private final PagedResourcesAssembler<BudgetEntity> pagedResourcesAssembler;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Override
 	@Transactional
 	public BudgetResponse createBudget(String userId, BudgetRequest request) {
 		if (request.getCategoryId() != null) {
-			CategoryEntity category =  categoryRepository.findByCategoryId(request.getCategoryId())
+			CategoryEntity category = categoryRepository.findByCategoryId(request.getCategoryId())
 					.orElseThrow(() -> new ResourceNotFoundException("Invalid Caetgory for Budget"));
-			
-	        // Prevent budget creation for INCOME categories
-			if("INCOME".equalsIgnoreCase(category.getType().toString())) {
+
+			// Prevent budget creation for INCOME categories
+			if ("INCOME".equalsIgnoreCase(category.getType().toString())) {
 				throw new IllegalArgumentException("Budgets can only be assigned to 'EXPENSE' Categories");
 			}
 		}
-		
-		BudgetEntity budget = BudgetEntity.builder().budgetId(IdGeneratorUtil.generatePrefixedId("BUD")).userId(userId)
-				.name(request.getName()).categoryId(request.getCategoryId()).budgetAmount(request.getBudgetAmount()).spendAmount(0.0)
-				.startDate(request.getStartDate()).endDate(request.getEndDate()).note(request.getNote()).build();
 
-		
+		BudgetEntity budget = BudgetEntity.builder().budgetId(IdGeneratorUtil.generatePrefixedId("BUD")).userId(userId)
+				.name(request.getName()).categoryId(request.getCategoryId()).budgetAmount(request.getBudgetAmount())
+				.spendAmount(0.0).startDate(request.getStartDate()).endDate(request.getEndDate())
+				.note(request.getNote()).build();
+
 		log.info(budget.toString());
 		try {
 			budgetRepositpry.save(budget);
@@ -83,13 +87,13 @@ public class BudgetServiceImpl implements BudgetService {
 		if (request.getCategoryId() != null) {
 			CategoryEntity category = categoryRepository.findByCategoryId(request.getCategoryId())
 					.orElseThrow(() -> new ResourceNotFoundException("Invalid Caetgory for Budget"));
-			
+
 			// Prevent budget creation for INCOME categories
-						if("INCOME".equalsIgnoreCase(category.getType().toString())) {
-							throw new IllegalArgumentException("Budgets can only be assigned to 'EXPENSE' Categories");
-						}
+			if ("INCOME".equalsIgnoreCase(category.getType().toString())) {
+				throw new IllegalArgumentException("Budgets can only be assigned to 'EXPENSE' Categories");
+			}
 		}
-		
+
 		budget.setName(request.getName());
 		budget.setCategoryId(request.getCategoryId());
 		budget.setBudgetAmount(request.getBudgetAmount());
@@ -147,77 +151,94 @@ public class BudgetServiceImpl implements BudgetService {
 	}
 
 	@Override
-	public PagedModel<BudgetResponse> searchBudgets(
-			String userId,
-			String name,
-            String categoryId,
-            Double minBudgetAmount,
-            Double maxBudgetAmount,
-            LocalDate startDate,
-            LocalDate endDate,
-            String noteKeyword,
-            int page,
-            int size,
-            String sortBy,
-            String direction) {
-
-		// 🔧 FIX: Safe regex for note keyword
-		String safeNoteKeyword = (noteKeyword == null || noteKeyword.isBlank()) ? null
-				: "(?i).*" + Pattern.quote(noteKeyword.trim()) + ".*";
+	public PagedModel<BudgetResponse> searchBudgets(String userId, String name, String categoryId,
+			Double minBudgetAmount, Double maxBudgetAmount, LocalDate startDate, LocalDate endDate, String noteKeyword,
+			int page, int size, String sortBy, String direction) {
 
 		Sort sort = "asc".equalsIgnoreCase(direction) ? Sort.by(sortBy).ascending().and(Sort.by("budgetId").ascending())
 				: Sort.by(sortBy).descending().and(Sort.by("budgetId").descending());
 
 		Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size), sort);
 
-		Page<BudgetEntity> pageResult = budgetCustomRepository.searchBudgets(name, userId, categoryId, minBudgetAmount,
-				maxBudgetAmount, startDate, endDate, safeNoteKeyword, pageable);
+		// ✅ Correct order: userId first
+		Page<BudgetEntity> pageResult = budgetCustomRepository.searchBudgets(userId, name, categoryId, minBudgetAmount,
+				maxBudgetAmount, startDate, endDate, noteKeyword, pageable);
+
+		log.info("SearchBudgets: found {} results", pageResult.getTotalElements());
 
 		return pagedResourcesAssembler.toModel(pageResult, assembler);
 	}
 
 	@Override
 	@Transactional
-	public void adjustBudgetForCategoryChange(
-	        String userId,
-	        String oldBudgetId,
-	        String newBudgetId,
-	        Double oldAmount,
-	        Double newAmount,
-	        String oldCategoryType,
-	        String newCategoryType
-	) {
+	public void adjustBudgetForCategoryChange(String userId, String oldBudgetId, String newBudgetId, Double oldAmount,
+			Double newAmount, String oldCategoryType, String newCategoryType) {
 
-	    // 🔒 Defensive: if neither old nor new is EXPENSE, skip completely
-	    if (!"EXPENSE".equalsIgnoreCase(oldCategoryType) && 
-	        !"EXPENSE".equalsIgnoreCase(newCategoryType)) {
-	        log.debug("No budget adjustment needed (not an EXPENSE transaction)");
-	        return;
-	    }
+		// 🔒 Defensive: if neither old nor new is EXPENSE, skip completely
+		if (!"EXPENSE".equalsIgnoreCase(oldCategoryType) && !"EXPENSE".equalsIgnoreCase(newCategoryType)) {
+			log.debug("No budget adjustment needed (not an EXPENSE transaction)");
+			return;
+		}
 
-	    // 1️ Reduce old budget if old category was EXPENSE
-	    if ("EXPENSE".equalsIgnoreCase(oldCategoryType) && oldBudgetId != null) {
-	        budgetRepositpry.findByBudgetId(oldBudgetId).ifPresent(budget -> {
-	            double spend = budget.getSpendAmount() != null ? budget.getSpendAmount() : 0.0;
-	            spend -= oldAmount != null ? oldAmount : 0.0;
-	            if (spend < 0) spend = 0.0; // don’t let it go negative
-	            budget.setSpendAmount(spend);
-	            budgetRepositpry.save(budget);
-	            log.info("Adjusted old Budget {} spendAmount to {}", budget.getBudgetId(), spend);
-	        });
-	    }
+		// 1️ Reduce old budget if old category was EXPENSE
+		if ("EXPENSE".equalsIgnoreCase(oldCategoryType) && oldBudgetId != null) {
+			budgetRepositpry.findByBudgetId(oldBudgetId).ifPresent(budget -> {
+				double spend = budget.getSpendAmount() != null ? budget.getSpendAmount() : 0.0;
+				spend -= oldAmount != null ? oldAmount : 0.0;
+				if (spend < 0)
+					spend = 0.0; // don’t let it go negative
+				budget.setSpendAmount(spend);
+				budgetRepositpry.save(budget);
+				log.info("Adjusted old Budget {} spendAmount to {}", budget.getBudgetId(), spend);
+			});
+		}
 
-	    // 2️ Add to new budget if new category is EXPENSE
-	    if ("EXPENSE".equalsIgnoreCase(newCategoryType) && newBudgetId != null) {
-	        budgetRepositpry.findByBudgetId(newBudgetId).ifPresent(budget -> {
-	            double spend = budget.getSpendAmount() != null ? budget.getSpendAmount() : 0.0;
-	            spend += newAmount != null ? newAmount : 0.0;
-	            budget.setSpendAmount(spend);
-	            budgetRepositpry.save(budget);
-	            log.info("Updated new Budget {} spendAmount to {}", budget.getBudgetId(), spend);
-	        });
-	    }
+		// 2️ Add to new budget if new category is EXPENSE
+		if ("EXPENSE".equalsIgnoreCase(newCategoryType) && newBudgetId != null) {
+			budgetRepositpry.findByBudgetId(newBudgetId).ifPresent(budget -> {
+				double spend = budget.getSpendAmount() != null ? budget.getSpendAmount() : 0.0;
+				spend += newAmount != null ? newAmount : 0.0;
+				budget.setSpendAmount(spend);
+				budgetRepositpry.save(budget);
+				log.info("Updated new Budget {} spendAmount to {}", budget.getBudgetId(), spend);
+			});
+		}
 	}
 
+	@Override
+	public void checkBudgetStatus(UserEntity user, BudgetEntity budget) {
+
+		Double currentSpend = budget.getSpendAmount() != null ? budget.getSpendAmount() : 0.0;
+		Double budgetLimit = budget.getBudgetAmount();
+
+		if (budgetLimit == null || budgetLimit <= 0) {
+			log.warn("Budget {} has invalid limit: {}", budget.getName(), budgetLimit);
+			return;
+		}
+
+		// Calculate usage percentage
+		double usage = (currentSpend / budgetLimit) * 100;
+
+		log.info("Checking budget status: User={}, Budget={}, Limit={}, Spent={}, Usage={}%", user.getEmail(),
+				budget.getName(), budgetLimit, currentSpend, usage);
+
+		// Trigger Overspending Alert (>= 100%)
+		if (usage >= 100) {
+			log.info("Publishing OVERSPENDING event for Budget '{}' ({}%)", budget.getName(), usage);
+
+			BudgetAlertEvent event = new BudgetAlertEvent(user, budget, BudgetAlertType.OVERSPENDING, currentSpend,
+					budgetLimit);
+			applicationEventPublisher.publishEvent(event);
+		} else if (usage >= 80 && usage < 100) {
+			// Trigger Low Budget Alert (>= 80% usage but < 100%)
+
+			log.info("Publishing LOW_BUDGET for Budget '{}' ({}%)", budget.getName(), usage);
+
+			BudgetAlertEvent event = new BudgetAlertEvent(user, budget, BudgetAlertType.LOW_BUDGET, currentSpend,
+					budgetLimit);
+
+			applicationEventPublisher.publishEvent(event);
+		}
+	}
 
 }

@@ -15,14 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.demo.finance_tracker_backend.assembler.TransactionResponseAssembler;
 import com.demo.finance_tracker_backend.dto.TransactionRequest;
 import com.demo.finance_tracker_backend.dto.TransactionResponse;
+import com.demo.finance_tracker_backend.entity.BudgetEntity;
 import com.demo.finance_tracker_backend.entity.CategoryEntity;
 import com.demo.finance_tracker_backend.entity.TransactionEntity;
+import com.demo.finance_tracker_backend.entity.UserEntity;
 import com.demo.finance_tracker_backend.exception.ResourceNotFoundException;
 import com.demo.finance_tracker_backend.exception.UnauthorizedException;
 import com.demo.finance_tracker_backend.repository.BudgetRepository;
 import com.demo.finance_tracker_backend.repository.CategoryRepository;
 import com.demo.finance_tracker_backend.repository.TransactionCustomRepository;
 import com.demo.finance_tracker_backend.repository.TransactionRepository;
+import com.demo.finance_tracker_backend.repository.UserRepository;
 import com.demo.finance_tracker_backend.service.BudgetService;
 import com.demo.finance_tracker_backend.service.TransactionService;
 import com.demo.finance_tracker_backend.util.IdGeneratorUtil;
@@ -35,15 +38,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
-    private final TransactionRepository transactionRepository;
-    private final TransactionCustomRepository transactionCustomRepository;
-    private final CategoryRepository categoryRepository;
-    private final BudgetRepository budgetRepository;
-    private final BudgetService budgetService;
-    private final TransactionResponseAssembler assembler;
-    private final PagedResourcesAssembler<TransactionEntity> pagedResourcesAssembler;
+	private final TransactionRepository transactionRepository;
+	private final TransactionCustomRepository transactionCustomRepository;
+	private final CategoryRepository categoryRepository;
+	private final UserRepository userRepository;
+	private final BudgetRepository budgetRepository;
+	private final BudgetService budgetService;
+	private final TransactionResponseAssembler assembler;
+	private final PagedResourcesAssembler<TransactionEntity> pagedResourcesAssembler;
 
-    @Override
+	@Override
     @Transactional
     public TransactionResponse createTransaction(String userId, TransactionRequest request) {
 
@@ -73,7 +77,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalArgumentException("BudgetId is mandatory for EXPENSE transactions");
         }
 
-        budgetRepository.findByBudgetId(request.getBudgetId())
+       budgetRepository.findByBudgetId(request.getBudgetId())
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid budget for transaction"));
 
         TransactionEntity txn = TransactionEntity.builder()
@@ -91,171 +95,178 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Adjust budget spend
         budgetService.adjustBudgetForCategoryChange(userId, null, txn.getBudgetId(), 0.0, txn.getAmount(), null, categoryType);
-
+        
+        // Refetch the updated budget for correct usage calculation
+        BudgetEntity updatedBudget = budgetRepository.findByBudgetId(txn.getBudgetId())
+        		.orElseThrow(() -> new ResourceNotFoundException("Invalid budget for transaction"));
+        
+        // Check budget status for alerts
+        UserEntity user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        budgetService.checkBudgetStatus(user, updatedBudget);
+        
         return assembler.toModel(txn);
     }
 
+	@Override
+	@Transactional
+	public TransactionResponse updateTransaction(String transactionId, TransactionRequest request, String userId) {
 
-    @Override
-    @Transactional
-    public TransactionResponse updateTransaction(String transactionId, TransactionRequest request, String userId) {
+		// Fetch existing transaction
+		TransactionEntity txn = transactionRepository.findByTransactionId(transactionId)
+				.orElseThrow(() -> new ResourceNotFoundException("Transaction Not Found"));
 
-    	// Fetch existing transaction
-    	TransactionEntity txn = transactionRepository.findByTransactionId(transactionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Transaction Not Found"));
+		// Authorization check
+		if (!txn.getUserId().equals(userId)) {
+			throw new UnauthorizedException("You cannot update this transaction");
+		}
 
-        // Authorization check
-        if (!txn.getUserId().equals(userId)) {
-            throw new UnauthorizedException("You cannot update this transaction");
+		// ✅ Validate new category
+		CategoryEntity newCategory = categoryRepository.findByCategoryId(request.getCategoryId())
+				.orElseThrow(() -> new ResourceNotFoundException("Category Not Found"));
+
+		String newCategoryType = newCategory.getType().name();
+
+		// 🔒 Prevent assigning budget to INCOME
+		if ("INCOME".equalsIgnoreCase(newCategoryType) && request.getBudgetId() != null) {
+			throw new IllegalArgumentException("INCOME transactions cannot have a budget assigned");
+		}
+
+		// If EXPENSE, validate budget exists
+		if ("EXPENSE".equalsIgnoreCase(newCategoryType) && request.getBudgetId() != null) {
+			budgetRepository.findByBudgetId(request.getBudgetId())
+					.orElseThrow(() -> new ResourceNotFoundException("Invalid budget for transaction"));
+		}
+
+		// Old values
+		double oldAmount = txn.getAmount();
+		String oldCategoryType = null;
+		String oldBudgetId = txn.getBudgetId();
+
+		if (txn.getCategoryId() != null) {
+			oldCategoryType = categoryRepository.findByCategoryId(txn.getCategoryId()).map(c -> c.getType().name())
+					.orElse(null);
+		}
+
+		// ❌ Prevent changing from EXPENSE <-> INCOME
+		if (oldCategoryType != null && !oldCategoryType.equalsIgnoreCase(newCategoryType)) {
+			throw new IllegalArgumentException(
+					"You cannot change transaction type from " + oldCategoryType + " to " + newCategoryType);
+		}
+
+		// ✅ Safe update (same type only)
+		txn.setCategoryId(request.getCategoryId());
+		txn.setDescription(request.getDescription());
+		txn.setAmount(request.getAmount());
+		txn.setTransactionDate(request.getTransactionDate());
+
+		// Only set budgetId for EXPENSE transactions
+		if ("EXPENSE".equalsIgnoreCase(newCategoryType)) {
+			txn.setBudgetId(request.getBudgetId());
+		}
+
+		transactionRepository.save(txn);
+
+		// Adjust budgets (only needed if still EXPENSE)
+		budgetService.adjustBudgetForCategoryChange(userId, oldBudgetId, txn.getBudgetId(), oldAmount, txn.getAmount(),
+				oldCategoryType, newCategoryType);
+		
+		 // ✅ Check budget status for alerts
+        if ("EXPENSE".equalsIgnoreCase(newCategoryType) && txn.getBudgetId() != null) {
+            UserEntity user = userRepository.findByUserId(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+         // Refetch the updated budget for correct usage calculation
+            BudgetEntity updatedBudget = budgetRepository.findByBudgetId(txn.getBudgetId())
+            		.orElseThrow(() -> new ResourceNotFoundException("Invalid budget for transaction"));
+            budgetService.checkBudgetStatus(user, updatedBudget);
         }
 
-        // ✅ Validate new category
-        CategoryEntity newCategory = categoryRepository.findByCategoryId(request.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category Not Found"));
-        
-        String newCategoryType = newCategory.getType().name();
-        
-        // 🔒 Prevent assigning budget to INCOME
-        if("INCOME".equalsIgnoreCase(newCategoryType) && request.getBudgetId() != null) {
-            throw new IllegalArgumentException("INCOME transactions cannot have a budget assigned");
+		log.info("Updated Transaction {} by user {}", transactionId, userId);
+		return assembler.toModel(txn);
+	}
+
+	@Override
+	@Transactional
+	public void deleteTransaction(String transactionId, String userId) {
+		TransactionEntity txn = transactionRepository.findByTransactionId(transactionId)
+				.orElseThrow(() -> new ResourceNotFoundException("Transaction Not Found"));
+
+		if (!txn.getUserId().equals(userId)) {
+			throw new UnauthorizedException("You are not allowed to delete this transaction");
+		}
+
+		// Save old values
+		double oldAmount = txn.getAmount();
+		String oldCategoryType = null;
+		String oldBudgetId = txn.getBudgetId();
+
+		if (txn.getCategoryId() != null) {
+			oldCategoryType = categoryRepository.findByCategoryId(txn.getCategoryId()).map(c -> c.getType().name())
+					.orElse(null);
+		}
+
+		transactionRepository.deleteByTransactionId(transactionId);
+
+		// Adjust budget for delete
+		budgetService.adjustBudgetForCategoryChange(userId, oldBudgetId, null, oldAmount, 0.0, oldCategoryType, null);
+
+		 // ✅ Check budget status after delete
+        if ("EXPENSE".equalsIgnoreCase(oldCategoryType) && oldBudgetId != null) {
+        	// Refetch the updated budget for correct usage calculation
+            BudgetEntity updatedBudget = budgetRepository.findByBudgetId(txn.getBudgetId())
+            		.orElseThrow(() -> new ResourceNotFoundException("Invalid budget for transaction"));
+            
+            // Check budget status for alerts
+            UserEntity user = userRepository.findByUserId(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            budgetService.checkBudgetStatus(user, updatedBudget);
         }
-        
-        // If EXPENSE, validate budget exists
-        if ("EXPENSE".equalsIgnoreCase(newCategoryType) && request.getBudgetId() != null) {
-            budgetRepository.findByBudgetId(request.getBudgetId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Invalid budget for transaction"));
-        }
-        
-        // Old values
-        double oldAmount = txn.getAmount();
-        String oldCategoryType = null;
-        String oldBudgetId = txn.getBudgetId();
+		
+		log.info("Deleted Transaction {} by user {}", transactionId, userId);
+	}
 
-        if (txn.getCategoryId() != null) {
-            oldCategoryType = categoryRepository.findByCategoryId(txn.getCategoryId())
-                    .map(c -> c.getType().name()).orElse(null);
-        }
+	@Override
+	public TransactionResponse getTransactionById(String transactionId, String userId) {
+		TransactionEntity txn = transactionRepository.findByTransactionId(transactionId)
+				.orElseThrow(() -> new ResourceNotFoundException("Transaction Not Found"));
 
-        // ❌ Prevent changing from EXPENSE <-> INCOME
-        if (oldCategoryType != null && !oldCategoryType.equalsIgnoreCase(newCategoryType)) {
-            throw new IllegalArgumentException(
-                    "You cannot change transaction type from " + oldCategoryType + " to " + newCategoryType
-            );
-        }
+		if (!txn.getUserId().equals(userId)) {
+			throw new UnauthorizedException("You are not allowed to view this transaction");
+		}
 
-        // ✅ Safe update (same type only)
-        txn.setCategoryId(request.getCategoryId());
-        txn.setDescription(request.getDescription());
-        txn.setAmount(request.getAmount());
-        txn.setTransactionDate(request.getTransactionDate());
+		return assembler.toModel(txn);
+	}
 
-        // Only set budgetId for EXPENSE transactions
-        if("EXPENSE".equalsIgnoreCase(newCategoryType)) {
-        	txn.setBudgetId(request.getBudgetId());
-        }
-        
-        transactionRepository.save(txn);
+	@Override
+	public PagedModel<TransactionResponse> getUserTransactionsPaged(String userId, int page, int size, String sortBy,
+			String direction) {
+		Sort sort = "asc".equalsIgnoreCase(direction)
+				? Sort.by(sortBy).ascending().and(Sort.by("transactionId").ascending())
+				: Sort.by(sortBy).descending().and(Sort.by("transactionId").descending());
 
-        // Adjust budgets (only needed if still EXPENSE)
-        budgetService.adjustBudgetForCategoryChange(
-                userId, oldBudgetId, txn.getBudgetId(),
-                oldAmount, txn.getAmount(),
-                oldCategoryType, newCategoryType
-        );
+		Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size), sort);
+		Page<TransactionEntity> pageResult = transactionRepository.findByUserId(userId, pageable);
+		return pagedResourcesAssembler.toModel(pageResult, assembler);
+	}
 
-        log.info("Updated Transaction {} by user {}", transactionId, userId);
-        return assembler.toModel(txn);
-    }
+	@Override
+	public PagedModel<TransactionResponse> searchTransactions(String userId, String categoryId, String budgetId,
+			Double minAmount, Double maxAmount, LocalDate startDate, LocalDate endDate, String description, int page,
+			int size, String sortBy, String direction) {
 
-    @Override
-    @Transactional
-    public void deleteTransaction(String transactionId, String userId) {
-      	TransactionEntity txn = transactionRepository.findByTransactionId(transactionId)
-                  .orElseThrow(() -> new ResourceNotFoundException("Transaction Not Found"));
+		String safeDescription = (description == null || description.isBlank()) ? null
+				: "(?i).*" + Pattern.quote(description.trim()) + ".*";
 
-        if (!txn.getUserId().equals(userId)) {
-              throw new UnauthorizedException("You are not allowed to delete this transaction");
-          }
+		Sort sort = "asc".equalsIgnoreCase(direction)
+				? Sort.by(sortBy).ascending().and(Sort.by("transactionId").ascending())
+				: Sort.by(sortBy).descending().and(Sort.by("transactionId").descending());
 
-        // Save old values
-        double oldAmount = txn.getAmount();
-        String oldCategoryType = null;
-        String oldBudgetId = txn.getBudgetId();
-        
-        if(txn.getCategoryId() != null) {
-        	oldCategoryType = categoryRepository.findByCategoryId(txn.getCategoryId())
-        			.map(c -> c.getType().name()).orElse(null);
-        }
+		Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size), sort);
 
-        transactionRepository.deleteByTransactionId(transactionId);
-        
-        // Adjust budget for delete
-        budgetService.adjustBudgetForCategoryChange(userId, oldBudgetId, null, oldAmount, 0.0, oldCategoryType, null);
-        
-        log.info("Deleted Transaction {} by user {}", transactionId, userId);
-    }
+		Page<TransactionEntity> pageResult = transactionCustomRepository.searchTransactions(userId, categoryId,
+				budgetId, minAmount, maxAmount, startDate, endDate, safeDescription, pageable);
 
-    @Override
-    public TransactionResponse getTransactionById(String transactionId, String userId) {
-        TransactionEntity txn = transactionRepository.findByTransactionId(transactionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Transaction Not Found"));
-
-        if (!txn.getUserId().equals(userId)) {
-            throw new UnauthorizedException("You are not allowed to view this transaction");
-        }
-
-        return assembler.toModel(txn);
-    }
-
-    @Override
-    public PagedModel<TransactionResponse> getUserTransactionsPaged(String userId, int page, int size, String sortBy, String direction) {
-        Sort sort = "asc".equalsIgnoreCase(direction)
-                ? Sort.by(sortBy).ascending().and(Sort.by("transactionId").ascending())
-                : Sort.by(sortBy).descending().and(Sort.by("transactionId").descending());
-
-        Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size), sort);
-        Page<TransactionEntity> pageResult = transactionRepository.findByUserId(userId, pageable);
-        return pagedResourcesAssembler.toModel(pageResult, assembler);
-    }
-
-    @Override
-    public PagedModel<TransactionResponse> searchTransactions(
-            String userId,
-            String categoryId,
-            String budgetId,
-            Double minAmount,
-            Double maxAmount,
-            LocalDate startDate,
-            LocalDate endDate,
-            String description,
-            int page,
-            int size,
-            String sortBy,
-            String direction) {
-
-        String safeDescription = (description == null || description.isBlank())
-                ? null
-                : "(?i).*" + Pattern.quote(description.trim()) + ".*";
-
-        Sort sort = "asc".equalsIgnoreCase(direction)
-                ? Sort.by(sortBy).ascending().and(Sort.by("transactionId").ascending())
-                : Sort.by(sortBy).descending().and(Sort.by("transactionId").descending());
-
-        Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size), sort);
-
-        Page<TransactionEntity> pageResult = transactionCustomRepository.searchTransactions(
-                userId,
-                categoryId,
-                budgetId,
-                minAmount,
-                maxAmount,
-                startDate,
-                endDate,
-                safeDescription,
-                pageable
-        );
-
-        log.info("Searching transactions: {}", pageResult);
-        return pagedResourcesAssembler.toModel(pageResult, assembler);
-    }
+		log.info("Searching transactions: {}", pageResult);
+		return pagedResourcesAssembler.toModel(pageResult, assembler);
+	}
 }

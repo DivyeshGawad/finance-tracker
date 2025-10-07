@@ -6,6 +6,8 @@ import org.springframework.hateoas.PagedModel;
 
 import com.demo.finance_tracker_backend.dto.BudgetRequest;
 import com.demo.finance_tracker_backend.dto.BudgetResponse;
+import com.demo.finance_tracker_backend.entity.BudgetEntity;
+import com.demo.finance_tracker_backend.entity.UserEntity;
 
 public interface BudgetService {
 
@@ -70,4 +72,9 @@ public interface BudgetService {
 			String oldCategoryType,
 			String newCategoryType
 			);
+	
+	/*
+	 *  Method use to alert
+	 * */
+	 public void checkBudgetStatus(UserEntity user, BudgetEntity budget);
 }

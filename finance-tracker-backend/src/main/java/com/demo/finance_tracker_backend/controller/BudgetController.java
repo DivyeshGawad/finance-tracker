@@ -101,32 +101,38 @@ public class BudgetController {
 		return ResponseEntity.ok(ApiResponse.success("Successfully fetched all transaction for user ", response));
 	}
 	
-	// Search Budget
+	// 🔍 Search Budget
 	@GetMapping("/search")
 	@PreAuthorize("hasAnyRole('ADMIN','USER')")
 	public ResponseEntity<ApiResponse<PagedModel<BudgetResponse>>> searchBudgets(
-			@RequestParam(required = false) String name,
-			@RequestParam(required = false) String categoryId,
-			@RequestParam(required = false) Double minBudgetAmount,
-			@RequestParam(required = false) Double maxBudgetAmount,
-			@RequestParam(required = false) String startDate,
-			@RequestParam(required = false) String endDate,
-			@RequestParam(required = false) String noteKeyword,
-			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "5") int size,
-			@RequestParam(defaultValue = "budgetId") String sortBy,
-			@RequestParam(defaultValue = "asc") String direction
-			){
-		String userId = currentUser.getUserId();
-		
-		LocalDate start = startDate != null ? LocalDate.parse(startDate) : null;
-		LocalDate end = endDate != null ? LocalDate.parse(endDate) : null;
-		
-		PagedModel<BudgetResponse> pagedModel = budgetService.searchBudgets(name, userId, categoryId, minBudgetAmount, maxBudgetAmount, start, end, noteKeyword, page, size, sortBy, direction);
-		
+	        @RequestParam(required = false) String name,
+	        @RequestParam(required = false) String categoryId,
+	        @RequestParam(required = false) Double minBudgetAmount,
+	        @RequestParam(required = false) Double maxBudgetAmount,
+	        @RequestParam(required = false) String startDate,
+	        @RequestParam(required = false) String endDate,
+	        @RequestParam(required = false) String noteKeyword,
+	        @RequestParam(defaultValue = "0") int page,
+	        @RequestParam(defaultValue = "5") int size,
+	        @RequestParam(defaultValue = "budgetId") String sortBy,
+	        @RequestParam(defaultValue = "asc") String direction) {
+
+	    String userId = currentUser.getUserId();
+
+	    LocalDate start = (startDate != null && !startDate.isBlank()) ? LocalDate.parse(startDate) : null;
+	    LocalDate end = (endDate != null && !endDate.isBlank()) ? LocalDate.parse(endDate) : null;
+
+	    PagedModel<BudgetResponse> pagedModel = budgetService.searchBudgets(
+	            userId, name, categoryId,
+	            minBudgetAmount, maxBudgetAmount,
+	            start, end, noteKeyword,
+	            page, size, sortBy, direction);
+
 	    if (pagedModel.getMetadata().getTotalElements() == 0) {
-	        return ResponseEntity.ok(ApiResponse.error("Bidget Not Found.", null));
+	        return ResponseEntity.ok(ApiResponse.error("Budget not found.", null));
 	    }
-	    return ResponseEntity.ok(ApiResponse.success("Budgets fetched successfully", pagedModel));
+
+	    return ResponseEntity.ok(ApiResponse.success("Budgets fetched successfully.", pagedModel));
 	}
+
 }
