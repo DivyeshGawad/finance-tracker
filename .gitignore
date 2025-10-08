@@ -29,6 +29,7 @@ target/generated-test-sources/
 # Eclipse
 .settings/
 bin/
+/.metadata/
 
 # IntelliJ IDEA
 out/
