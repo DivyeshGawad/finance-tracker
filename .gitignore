@@ -75,13 +75,31 @@ src/main/resources/application*.yml
 src/main/resources/application*.properties
 
 # =========================
-# Frontend (Angular) future-proofing
+# Frontend (Angular + Tailwind)
 # =========================
-# Node modules
+# Node dependencies
 node_modules/
 
 # Angular build outputs
 dist/
 out-tsc/
 .angular/
-/.metadata/
+.angular/cache/
+
+# Tailwind generated files
+public/
+
+# VS Code / editor
+.vscode/
+
+# IDE settings
+.idea/
+*.iml
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+coverage/
