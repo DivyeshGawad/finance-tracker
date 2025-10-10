@@ -1,32 +1,46 @@
-<div class="p-8 bg-gray-50 min-h-screen">
+<div class="flex h-screen">
 
-  <!-- Tailwind heading -->
-  <h1 class="text-4xl font-bold text-center text-green-600 mb-10">
-    Finance Tracker Test Page 🚀
-  </h1>
-
-  <!-- Dashboard card grid -->
-  <div class="flex flex-wrap -mx-4">
-    <div class="w-full sm:w-1/2 lg:w-1/4 px-4 mb-4">
-      <p-card header="Total Income">
-        <p-button label="View" icon="pi pi-eye" class="w-full bg-blue-500 text-white hover:bg-blue-600"></p-button>
-      </p-card>
+  <!-- Mobile Hamburger -->
+  <div class="sm:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between bg-blue-600 text-white p-4">
+    <div class="font-bold text-xl flex items-center gap-2">
+      <i class="pi pi-coins"></i>
+      Finance Tracker
     </div>
-    <div class="w-full sm:w-1/2 lg:w-1/4 px-4 mb-4">
-      <p-card header="Total Expenses">
-        <p-button label="View" icon="pi pi-eye" class="w-full bg-red-500 text-white hover:bg-red-600"></p-button>
-      </p-card>
-    </div>
-    <div class="w-full sm:w-1/2 lg:w-1/4 px-4 mb-4">
-      <p-card header="Budgets">
-        <p-button label="Manage" icon="pi pi-cog" class="w-full bg-yellow-500 text-white hover:bg-yellow-600"></p-button>
-      </p-card>
-    </div>
-    <div class="w-full sm:w-1/2 lg:w-1/4 px-4 mb-4">
-      <p-card header="Reports">
-        <p-button label="View" icon="pi pi-chart-line" class="w-full bg-green-500 text-white hover:bg-green-600"></p-button>
-      </p-card>
-    </div>
+    <button (click)="isSideBarOpen = !isSideBarOpen" class="text-white text-2xl focus:outline-none">
+      &#9776;
+    </button>
   </div>
+
+  <!-- Sidebar -->
+  <aside [class.translate-x-0]="isSideBarOpen || !isMobile()" [class.-translate-x-full]="!isSideBarOpen && isMobile()"
+    class="bg-blue-600 text-white w-64 flex-shrink-0 fixed sm:relative h-full z-40 top-0 left-0 transition-transform duration-300 ease-in-out">
+    <div class="p-4 font-bold text-xl flex items-center gap-2">
+      <i class="pi pi-indian-rupee
+"></i> Finance Tracker
+    </div>
+    <nav class="mt-6 flex flex-col gap-2">
+      <a routerLink="/dashboard" routerLinkActive="bg-blue-700" (click)="isSideBarOpen=false"
+        class="px-4 py-2 hover:bg-blue-500 rounded flex items-center gap-2">
+        <i class="pi pi-home"></i> Dashboard
+      </a>
+      <a routerLink="/transactions" routerLinkActive="bg-blue-700" (click)="isSideBarOpen=false"
+        class="px-4 py-2 hover:bg-blue-500 rounded flex items-center gap-2">
+        <i class="pi pi-wallet"></i> Transactions
+      </a>
+      <a routerLink="/budgets" routerLinkActive="bg-blue-700" (click)="isSideBarOpen=false"
+        class="px-4 py-2 hover:bg-blue-500 rounded flex items-center gap-2">
+        <i class="pi pi-chart-bar"></i> Budgets
+      </a>
+      <a routerLink="/reports" routerLinkActive="bg-blue-700" (click)="isSideBarOpen=false"
+        class="px-4 py-2 hover:bg-blue-500 rounded flex items-center gap-2">
+        <i class="pi pi-file"></i> Reports
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6 sm:ml-64 mt-16 sm:mt-0 overflow-auto">
+    <router-outlet></router-outlet>
+  </main>
 
 </div>
