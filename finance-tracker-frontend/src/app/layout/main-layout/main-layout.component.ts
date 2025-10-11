@@ -11,7 +11,23 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 })
 export class MainLayoutComponent {
 
- isSidebarOpen = false;
+  isSidebarOpen = false;
+
+  isUserMenuOpen = false;
+
+  toggleUserMenu() {
+    this.isUserMenuOpen = !this.isUserMenuOpen;
+  }
+
+  closeUserMenu() {
+    this.isUserMenuOpen = false;
+  }
+
+  logout() {
+    // 🔒 Later we’ll integrate backend logout logic here
+    alert('Logging out...');
+    this.isUserMenuOpen = false;
+  }
 
   /** Returns true if current device width < 640px */
   isMobile(): boolean {
