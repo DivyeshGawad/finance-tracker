@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
 import { CardModule } from 'primeng/card';
-import {ChartModule} from 'primeng/chart';
+import { ChartModule } from 'primeng/chart';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-dashboard-page',
   standalone: true,
   imports: [CardModule, ChartModule],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  templateUrl: './dashboard-page.component.html',
+  styleUrl: './dashboard-page.component.scss'
 })
-export class DashboardComponent {
+export class DashboardPageComponent {
+
   chartData: any;
   chartOptions: any;
 

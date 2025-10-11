@@ -1,30 +1,32 @@
 import { Routes } from '@angular/router';
+import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 
 export const routes: Routes = [
 
     {
-        path:'',
-        redirectTo:"dashboard",
-        pathMatch:"full"
-    },
-    {
-        path: "dashboard",
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
-    },
-    {
-        path: "transactions",
-        loadComponent: () => import('./features/transactions/transactions.component').then(m => m.TransactionsComponent)
-    },
-    {
-        path: "budgets",
-        loadComponent: () => import('./features/budgets/budgets.component').then(m => m.BudgetsComponent)
-    },
-    {
-        path: "reports",
-        loadComponent: () => import('./features/reports/reports.component').then(m => m.ReportsComponent)
-    },
-    {
-        path: "**",
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+        path: '',
+        component: MainLayoutComponent,
+        children: [
+            {
+                path: "dashboard",
+                loadComponent: () => import('./features/dashboard/pages/dashboard-page.component').then(m => m.DashboardPageComponent)
+            },
+            {
+                path: "transactions",
+                loadComponent: () => import('./features/transactions/pages/transactions-page.component').then(m => m.TransactionsPageComponent)
+            },
+            {
+                path: "budgets",
+                loadComponent: () => import('./features/budgets/pages/budgets-page.component').then(m => m.BudgetsPageComponent)
+            },
+            {
+                path: "reports",
+                loadComponent: () => import('./features/reports/pages/reports-page.component').then(m => m.ReportsPageComponent)
+            },
+            {
+                path: "**",
+                loadComponent: () => import('./features/dashboard/pages/dashboard-page.component').then(m => m.DashboardPageComponent)
+            }
+        ]
     }
 ];

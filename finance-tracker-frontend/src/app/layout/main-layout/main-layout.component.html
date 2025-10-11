@@ -1,0 +1,82 @@
+<div class="flex h-screen bg-gray-50">
+  <!-- 🌐 Header -->
+  <header
+    class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between 
+           bg-blue-700 text-white px-6 py-3 shadow-md transition-colors duration-300"
+  >
+    <!-- Project Name -->
+    <div class="flex items-center gap-2 text-xl font-semibold tracking-wide">
+      <i class="pi pi-coins text-yellow-300"></i>
+      <span>Finance Tracker</span>
+    </div>
+
+    <!-- Hamburger (Mobile Only) -->
+    <button
+      class="sm:hidden text-2xl focus:outline-none"
+      (click)="isSidebarOpen = !isSidebarOpen"
+    >
+      <i class="pi pi-bars"></i>
+    </button>
+  </header>
+
+  <!-- 🧭 Sidebar -->
+  <aside
+    class="fixed top-0 left-0 h-full w-64 bg-blue-700 text-white z-40 
+           transform transition-transform duration-300 ease-in-out sm:translate-x-0"
+    [class.-translate-x-full]="!isSidebarOpen && isMobile()"
+  >
+    <!-- Sidebar Title -->
+    <div
+      class="p-4 text-lg font-semibold flex items-center gap-2 
+             border-b border-blue-500 tracking-wide"
+    >
+      <i class="pi pi-th-large"></i> Menu
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="flex flex-col mt-4">
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="bg-blue-600"
+        (click)="closeSidebarOnMobile()"
+        class="px-5 py-3 hover:bg-blue-500 rounded flex items-center gap-3 transition"
+      >
+        <i class="pi pi-home"></i> Dashboard
+      </a>
+
+      <a
+        routerLink="/transactions"
+        routerLinkActive="bg-blue-600"
+        (click)="closeSidebarOnMobile()"
+        class="px-5 py-3 hover:bg-blue-500 rounded flex items-center gap-3 transition"
+      >
+        <i class="pi pi-wallet"></i> Transactions
+      </a>
+
+      <a
+        routerLink="/budgets"
+        routerLinkActive="bg-blue-600"
+        (click)="closeSidebarOnMobile()"
+        class="px-5 py-3 hover:bg-blue-500 rounded flex items-center gap-3 transition"
+      >
+        <i class="pi pi-chart-bar"></i> Budgets
+      </a>
+
+      <a
+        routerLink="/reports"
+        routerLinkActive="bg-blue-600"
+        (click)="closeSidebarOnMobile()"
+        class="px-5 py-3 hover:bg-blue-500 rounded flex items-center gap-3 transition"
+      >
+        <i class="pi pi-file"></i> Reports
+      </a>
+    </nav>
+  </aside>
+
+  <!-- 📄 Main Content -->
+  <main
+    class="flex-1 pt-16 sm:ml-64 p-6 overflow-y-auto transition-all duration-300"
+  >
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,8 @@
+/* Smooth transition for sidebar */
+aside {
+  transform: translateX(0);
+}
+
+aside.-translate-x-full {
+  transform: translateX(-100%);
+}
