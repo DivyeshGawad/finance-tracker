@@ -12,7 +12,7 @@
     <div class="flex items-center gap-4">
       <!-- User Icon -->
       <div class="relative">
-        <button (click)="toggleUserMenu()"
+        <button id="user-menu-button" (click)="toggleUserMenu()"
           class="flex items-center gap-2 bg-blue-600 px-3 py-2 rounded-full hover:bg-blue-500 transition">
           <i class="pi pi-user text-lg"></i>
           <i class="pi" [ngClass]="isUserMenuOpen ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
@@ -20,7 +20,7 @@
 
         <!-- Dropdown Menu -->
         <div *ngIf="isUserMenuOpen"
-          class="absolute right-0 mt-2 w-40 bg-white text-gray-800 rounded-lg shadow-lg py-2 animate-fadeIn z-50">
+          class="absolute right-0 mt-2 w-40 bg-white text-gray-800 rounded-lg shadow-lg py-2 animate-fadeIn dropdown-menu z-50">
           <a routerLink="/profile" class="block px-4 py-2 hover:bg-gray-100 transition" (click)="closeUserMenu()">
             <i class="pi pi-id-card mr-2 text-blue-700"></i> My Profile
           </a>
