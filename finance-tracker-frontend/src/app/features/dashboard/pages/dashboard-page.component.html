@@ -1,58 +1,56 @@
-<div class="p-6">
-    <h1 class="text-2xl font-bold mb-6 text-gray-800">Dashboard Overview</h1>
+<div class="max-w-[1200px] mx-auto">
+  <h1 class="text-2xl font-bold mb-6 text-gray-800">Dashboard Overview</h1>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-        <!-- Total Income -->
-        <p-card class="shadow-lg rounded-2xl">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500">Total Income</p>
-                    <h2 class="text-2xl font-bold text-green-600 mt-2">&#8377;17,254</h2>
-                </div>
-                <i class="pi pi-wallet text-green-600 text-4xl"></i>
-            </div>
-        </p-card>
-
-        <!-- Total Expense -->
-        <p-card class="shadow-lg rounded-2xl">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500">Total Expense</p>
-                    <h2 class="text-2xl font-bold text-red-600 mt-2">&#8377;11,254</h2>
-                </div>
-                <i class="pi pi-shopping-cart text-red-600 text-4xl"></i>
-            </div>
-        </p-card>
-
-        <!-- Budget Used -->
-        <p-card class="shadow-lg rounded-2xl">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500">Budget Used</p>
-                    <h2 class="text-2xl font-bold text-yellow-600 mt-2">73%</h2>
-                </div>
-                <i class="pi pi-chart-pie text-yellow-600 text-4xl"></i>
-            </div>
-        </p-card>
-
-        <!-- Reports Generated -->
-        <p-card class="shadow-lg rounded-2xl">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500">Reports Generated</p>
-                    <h2 class="text-2xl font-bold text-blue-600 mt-2">12</h2>
-                </div>
-                <i class="pi pi-file text-blue-600 text-4xl"></i>
-            </div>
-        </p-card>
-    </div>
-
-    <!-- Chart Section -->
-     <div class="bg-white shadow-md rounded-2xl p-6">
-        <h2>Expenses By Category</h2>
+  <!-- Cards Section -->
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Total Income -->
+    <p-card class="shadow-lg rounded-2xl">
+      <div class="flex items-center justify-between">
         <div>
-            <p-chart type="pie" [data]="chartData" [options]="chartOptions"></p-chart>
+          <p class="text-gray-500">Total Income</p>
+          <h2 class="text-2xl font-bold text-green-600 mt-2">&#8377;17,254</h2>
         </div>
-     </div>
+        <i class="pi pi-wallet text-green-600 text-4xl"></i>
+      </div>
+    </p-card>
+
+    <!-- Total Expense -->
+    <p-card class="shadow-lg rounded-2xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-500">Total Expense</p>
+          <h2 class="text-2xl font-bold text-red-600 mt-2">&#8377;11,254</h2>
+        </div>
+        <i class="pi pi-shopping-cart text-red-600 text-4xl"></i>
+      </div>
+    </p-card>
+
+    <!-- Budget Used -->
+    <p-card class="shadow-lg rounded-2xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-500">Budget Used</p>
+          <h2 class="text-2xl font-bold text-yellow-600 mt-2">73%</h2>
+        </div>
+        <i class="pi pi-chart-pie text-yellow-600 text-4xl"></i>
+      </div>
+    </p-card>
+
+    <!-- Reports Generated -->
+    <p-card class="shadow-lg rounded-2xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-500">Reports Generated</p>
+          <h2 class="text-2xl font-bold text-blue-600 mt-2">12</h2>
+        </div>
+        <i class="pi pi-file text-blue-600 text-4xl"></i>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Chart Section -->
+  <div class="bg-white shadow-md rounded-2xl p-6 mt-6">
+    <h2 class="text-lg font-semibold mb-4">Expenses By Category</h2>
+    <p-chart type="pie" [data]="chartData" [options]="chartOptions"></p-chart>
+  </div>
 </div>

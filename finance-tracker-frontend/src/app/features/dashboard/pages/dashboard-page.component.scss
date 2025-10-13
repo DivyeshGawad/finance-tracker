@@ -9,3 +9,22 @@ p-card {
 p-card:hover {
   transform: translateY(-5px);
 }
+
+/* Smooth transition for sidebar */
+aside {
+  transform: translateX(0);
+}
+
+aside.-translate-x-full {
+  transform: translateX(-100%);
+}
+
+/* Dropdown animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-in-out;
+}
