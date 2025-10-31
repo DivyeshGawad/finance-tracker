@@ -1,0 +1,75 @@
+<div class="bg-white p-8 max-w-2xl mx-auto">
+  <!-- Custom Header (inside the form) -->
+  <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
+    {{ isEditMode ? 'Edit Transaction' : 'Add Transaction' }}
+  </h2>
+  <form [formGroup]="transactionForm" (ngSubmit)="submitForm()" class="space-y-6 text-gray-800">
+    <!-- Date -->
+    <div>
+      <label class="block font-semibold mb-2">Date</label>
+      <input type="date" pInputText formControlName="transactionDate"
+        class="w-full border !border-gray-300 !rounded-lg px-4 !py-2.5 !text-gray-700 focus:!outline-none focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500" />
+      <small *ngIf="transactionForm.get('transactionDate')?.invalid && transactionForm.get('transactionDate')?.touched"
+        class="text-red-600 font-medium">
+        Date is required.
+      </small>
+    </div>
+
+    <!-- Category -->
+    <div>
+      <label class="block font-semibold mb-2">Category</label>
+      <input type="text" pInputText placeholder="Enter category name" formControlName="categoryName"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" />
+      <small *ngIf="transactionForm.get('categoryName')?.invalid && transactionForm.get('categoryName')?.touched"
+        class="text-red-600 font-medium">
+        Category name is required.
+      </small>
+    </div>
+
+    <!-- Type -->
+    <div>
+      <label class="block font-semibold mb-2">Type</label>
+      <p-select [options]="typeOptions" placeholder="Select type" formControlName="categoryType" optionLabel="label"
+        optionValue="value" class="w-full"></p-select>
+      <small *ngIf="transactionForm.get('categoryType')?.invalid && transactionForm.get('categoryType')?.touched"
+        class="text-red-600 font-medium">
+        Type is required.
+      </small>
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label class="block font-semibold mb-2">Description</label>
+      <textarea rows="3" pTextarea formControlName="description" placeholder="Enter transaction details"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"></textarea>
+      <small *ngIf="transactionForm.get('description')?.invalid && transactionForm.get('description')?.touched"
+        class="text-red-600 font-medium">
+        Description is required (max 100 characters).
+      </small>
+    </div>
+
+    <!-- Amount -->
+    <div>
+      <label class="block font-semibold mb-2">Amount</label>
+      <div class="relative">
+        <input type="number" pInputText placeholder="Enter amount" formControlName="amount" min="1" step="0.01"
+          class="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2.5 text-gray-800 text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none" />
+      </div>
+      <small *ngIf="transactionForm.get('amount')?.invalid && transactionForm.get('amount')?.touched"
+        class="text-red-600 font-medium">
+        Enter a valid amount greater than 0.
+      </small>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-3 pt-5 border-t border-gray-200 mt-4">
+      <button type="button" label="Cancel" icon="pi pi-times"
+        class="hover:!bg-red-600 hover:!text-white !font-semibold !px-5 !py-2.5 !bg-gray-100"
+        (click)="cancelForm()">Cancel</button>
+
+      <button pButton type="submit" [label]="isEditMode ? 'Update' : 'Add'"
+        [icon]="isEditMode ? 'pi pi-save' : 'pi pi-plus'"
+        class="!bg-blue-600 hover:!bg-green-700 !text-white !font-semibold !px-5 !py-2.5 shadow-md transition-all"></button>
+    </div>
+  </form>
+</div>

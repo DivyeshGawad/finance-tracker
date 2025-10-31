@@ -1,0 +1,149 @@
+<div class="bg-gray-50 px-6 sm:px-10 py-8 overflow-x-hidden">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
+    <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+      💰 Transactions
+    </h1>
+
+    <div class="flex flex-wrap gap-3 items-center">
+      <!-- Search -->
+      <div class="relative w-full sm:w-72 md:w-80">
+        <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="globalFilter"
+          (input)="table.filterGlobal(globalFilter, 'contains')"
+          placeholder="Search transactions..."
+          class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+        />
+      </div>
+
+      <!-- Add Button -->
+      <button
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        class="!bg-blue-600 hover:!bg-blue-700 !text-white !font-semibold !px-6 !py-3 rounded-md !flex !items-center !justify-center !gap-2 !shadow-md !transition-all !duration-200"
+        (click)="addTransaction()"
+      >
+        Add Transaction
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white border border-gray-200 shadow-md rounded-lg overflow-x-auto">
+    <p-table
+      #table
+      [value]="transactions"
+      [paginator]="true"
+      [rows]="5"
+      [globalFilterFields]="['transactionDate', 'categoryName', 'categoryType', 'description', 'amount']"
+      sortMode="multiple"
+      [tableStyle]="{ 'min-width': '1000px' }"
+      class="text-base custom-paginator"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    >
+      <!-- Header -->
+      <ng-template pTemplate="header">
+        <tr class="bg-blue-600 text-white text-sm uppercase tracking-wide">
+          <th pSortableColumn="transactionDate" class="text-left py-4 px-5 font-semibold">
+            Date <p-sortIcon field="transactionDate"></p-sortIcon>
+          </th>
+          <th pSortableColumn="categoryName" class="text-left py-4 px-5 font-semibold">
+            Category <p-sortIcon field="categoryName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="categoryType" class="text-left py-4 px-5 font-semibold">
+            Type <p-sortIcon field="categoryType"></p-sortIcon>
+          </th>
+          <th pSortableColumn="description" class="text-left py-4 px-5 font-semibold">
+            Description <p-sortIcon field="description"></p-sortIcon>
+          </th>
+          <th pSortableColumn="amount" class="text-right py-4 px-5 font-semibold">
+            Amount <p-sortIcon field="amount"></p-sortIcon>
+          </th>
+          <th class="text-center py-4 px-5 font-semibold">Actions</th>
+        </tr>
+      </ng-template>
+
+      <!-- Body -->
+      <ng-template pTemplate="body" let-tx>
+        <tr class="border-b border-gray-100 hover:bg-blue-50 transition-all duration-150">
+          <td class="py-4 px-5 text-gray-700 font-medium">{{ tx.transactionDate }}</td>
+          <td class="py-4 px-5 text-gray-700">{{ tx.categoryName }}</td>
+          <td class="py-4 px-5">
+            <span
+              class="px-3 py-1.5 rounded-md font-semibold"
+              [ngClass]="{
+                'bg-green-100 text-green-700': tx.categoryType === 'Income',
+                'bg-red-100 text-red-700': tx.categoryType === 'Expense'
+              }"
+            >
+              {{ tx.categoryType }}
+            </span>
+          </td>
+          <td class="py-4 px-5 text-gray-600">{{ tx.description }}</td>
+          <td
+            class="py-4 px-5 text-right font-semibold"
+            [ngClass]="{
+              'text-green-600': tx.categoryType === 'Income',
+              'text-red-600': tx.categoryType === 'Expense'
+            }"
+          >
+            ₹{{ tx.amount | number: '1.0-0' }}
+          </td>
+          <td class="py-4 px-5 text-center">
+            <div class="flex justify-center gap-3">
+              <button
+                pButton
+                icon="pi pi-pencil"
+                class="!bg-yellow-500 hover:!bg-yellow-600 text-white p-3 rounded-md shadow-sm"
+                (click)="editTransaction(tx)"
+              ></button>
+              <button
+                pButton
+                icon="pi pi-trash"
+                class="!bg-red-500 hover:!bg-red-600 text-white p-3 rounded-md shadow-sm"
+                (click)="deleteTransaction(tx)"
+              ></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Empty Message -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center p-8 text-gray-500 text-lg">
+            <i class="pi pi-info-circle mr-2"></i> No transactions found.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p class="text-sm text-gray-500 mt-5 sm:hidden text-center">
+    💡 Scroll horizontally to view all columns.
+  </p>
+</div>
+
+<!-- Dialog -->
+<p-dialog
+  
+  [(visible)]="isDialogVisible"
+  [modal]="true"
+  [draggable]="false"
+  [closable]="false"
+  [style]="{ width: '90vw', maxWidth: '500px' }"
+  [breakpoints]="{ '640px': '95vw' }"
+>
+  <app-transaction-form
+    [transaction]="selectedTransaction"
+    [isEditMode]="isEditMode"
+    (formSubmit)="handleTransactionSubmit($event)"
+    (formCancel)="isDialogVisible = false"
+  ></app-transaction-form>
+</p-dialog>
+
+<p-confirmDialog class="bg-white"></p-confirmDialog>
