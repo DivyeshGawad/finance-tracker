@@ -1,0 +1,7 @@
+/* Fix for PrimeNG Select / Dropdown overlay transparency */
+.p-select-option {
+  background-color: #ffffff !important; /* white background */
+  border: 1px solid #d1d5db !important; /* Tailwind border-gray-300 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  z-index: 9999 !important;
+}

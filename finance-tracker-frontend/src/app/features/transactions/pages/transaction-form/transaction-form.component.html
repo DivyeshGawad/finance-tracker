@@ -1,4 +1,4 @@
-<div class="bg-white p-8 max-w-2xl mx-auto">
+<div class="bg-white p-8 max-w-xl mx-auto">
   <!-- Custom Header (inside the form) -->
   <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
     {{ isEditMode ? 'Edit Transaction' : 'Add Transaction' }}
@@ -7,8 +7,8 @@
     <!-- Date -->
     <div>
       <label class="block font-semibold mb-2">Date</label>
-      <input type="date" pInputText formControlName="transactionDate"
-        class="w-full border !border-gray-300 !rounded-lg px-4 !py-2.5 !text-gray-700 focus:!outline-none focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500" />
+      <input type="date" formControlName="transactionDate"
+        class="w-full !border !border-gray-300 !rounded-lg !px-4 !py-2.5 !text-gray-700 focus:!outline-none focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500" />
       <small *ngIf="transactionForm.get('transactionDate')?.invalid && transactionForm.get('transactionDate')?.touched"
         class="text-red-600 font-medium">
         Date is required.
@@ -18,8 +18,8 @@
     <!-- Category -->
     <div>
       <label class="block font-semibold mb-2">Category</label>
-      <input type="text" pInputText placeholder="Enter category name" formControlName="categoryName"
-        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" />
+      <input type="text" placeholder="Enter category name" formControlName="categoryName"
+        class="w-full !border !border-gray-300 !rounded-lg !px-4 !py-2.5 !text-gray-700 focus:!outline-none focus:!ring-2 focus:!ring-blue-500 focus:border-blue-500 transition-all duration-200" />
       <small *ngIf="transactionForm.get('categoryName')?.invalid && transactionForm.get('categoryName')?.touched"
         class="text-red-600 font-medium">
         Category name is required.
@@ -27,12 +27,16 @@
     </div>
 
     <!-- Type -->
-    <div>
-      <label class="block font-semibold mb-2">Type</label>
+    <div class="mb-4">
+      <label class="block !font-semibold mb-2 text-gray-800">Type</label>
       <p-select [options]="typeOptions" placeholder="Select type" formControlName="categoryType" optionLabel="label"
-        optionValue="value" class="w-full"></p-select>
+        optionValue="value"
+        class="w-full !border !border-gray-300 !rounded-lg !shadow-sm focus:!ring-2 focus:!ring-blue-500"></p-select>
+
+
+      <!-- Validation Message -->
       <small *ngIf="transactionForm.get('categoryType')?.invalid && transactionForm.get('categoryType')?.touched"
-        class="text-red-600 font-medium">
+        class="text-red-600 font-medium mt-1 block">
         Type is required.
       </small>
     </div>
@@ -41,7 +45,7 @@
     <div>
       <label class="block font-semibold mb-2">Description</label>
       <textarea rows="3" pTextarea formControlName="description" placeholder="Enter transaction details"
-        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"></textarea>
+        class="w-full border !border-gray-300 !rounded-lg !px-4 !py-2.5 !text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"></textarea>
       <small *ngIf="transactionForm.get('description')?.invalid && transactionForm.get('description')?.touched"
         class="text-red-600 font-medium">
         Description is required (max 100 characters).

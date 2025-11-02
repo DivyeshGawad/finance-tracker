@@ -24,7 +24,7 @@
         pButton
         type="button"
         icon="pi pi-plus"
-        class="!bg-blue-600 hover:!bg-blue-700 !text-white !font-semibold !px-6 !py-3 rounded-md !flex !items-center !justify-center !gap-2 !shadow-md !transition-all !duration-200"
+        class="!bg-blue-600 hover:!bg-blue-700 !text-white !!font-semibold !px-6 !py-3 rounded-md !flex !items-center !justify-center !gap-2 !shadow-md !transition-all !duration-200"
         (click)="addTransaction()"
       >
         Add Transaction
@@ -48,33 +48,33 @@
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr class="bg-blue-600 text-white text-sm uppercase tracking-wide">
-          <th pSortableColumn="transactionDate" class="text-left py-4 px-5 font-semibold">
+          <th pSortableColumn="transactionDate" class="!text-center !py-4 !px-1 !font-semibold">
             Date <p-sortIcon field="transactionDate"></p-sortIcon>
           </th>
-          <th pSortableColumn="categoryName" class="text-left py-4 px-5 font-semibold">
+          <th pSortableColumn="categoryName" class="!text-center !py-4 !px-1 !font-semibold">
             Category <p-sortIcon field="categoryName"></p-sortIcon>
           </th>
-          <th pSortableColumn="categoryType" class="text-left py-4 px-5 font-semibold">
+          <th pSortableColumn="categoryType" class="!text-center !py-4 !px-1 !font-semibold">
             Type <p-sortIcon field="categoryType"></p-sortIcon>
           </th>
-          <th pSortableColumn="description" class="text-left py-4 px-5 font-semibold">
+          <th pSortableColumn="description" class="!text-center !py-4 !px-1 !font-semibold">
             Description <p-sortIcon field="description"></p-sortIcon>
           </th>
-          <th pSortableColumn="amount" class="text-right py-4 px-5 font-semibold">
+          <th pSortableColumn="amount" class="!text-center !py-4 !px-1 !font-semibold">
             Amount <p-sortIcon field="amount"></p-sortIcon>
           </th>
-          <th class="text-center py-4 px-5 font-semibold">Actions</th>
+          <th class="!py-4 !px-1 !text-center !font-semibold">Actions</th>
         </tr>
       </ng-template>
 
       <!-- Body -->
       <ng-template pTemplate="body" let-tx>
         <tr class="border-b border-gray-100 hover:bg-blue-50 transition-all duration-150">
-          <td class="py-4 px-5 text-gray-700 font-medium">{{ tx.transactionDate }}</td>
-          <td class="py-4 px-5 text-gray-700">{{ tx.categoryName }}</td>
-          <td class="py-4 px-5">
+          <td class="!py-4 !px-1 !text-center text-gray-700 font-medium">{{ tx.transactionDate }}</td>
+          <td class="!py-4 !px-1 !text-center text-gray-700">{{ tx.categoryName }}</td>
+          <td class="!py-4 !px-1 !text-center">
             <span
-              class="px-3 py-1.5 rounded-md font-semibold"
+              class="px-3 py-1.5 rounded-md !font-semibold"
               [ngClass]="{
                 'bg-green-100 text-green-700': tx.categoryType === 'Income',
                 'bg-red-100 text-red-700': tx.categoryType === 'Expense'
@@ -83,9 +83,9 @@
               {{ tx.categoryType }}
             </span>
           </td>
-          <td class="py-4 px-5 text-gray-600">{{ tx.description }}</td>
+          <td class="!py-4 !px-1 !text-center text-gray-600">{{ tx.description }}</td>
           <td
-            class="py-4 px-5 text-right font-semibold"
+            class="!py-4 !px-1 !text-center !font-semibold"
             [ngClass]="{
               'text-green-600': tx.categoryType === 'Income',
               'text-red-600': tx.categoryType === 'Expense'
@@ -93,18 +93,18 @@
           >
             ₹{{ tx.amount | number: '1.0-0' }}
           </td>
-          <td class="py-4 px-5 text-center">
+          <td class="!py-4 !px-1 !text-center">
             <div class="flex justify-center gap-3">
               <button
                 pButton
                 icon="pi pi-pencil"
-                class="!bg-yellow-500 hover:!bg-yellow-600 text-white p-3 rounded-md shadow-sm"
+                class="!bg-yellow-500 hover:!bg-yellow-600 !text-white !p-3 rounded-md shadow-sm"
                 (click)="editTransaction(tx)"
               ></button>
               <button
                 pButton
                 icon="pi pi-trash"
-                class="!bg-red-500 hover:!bg-red-600 text-white p-3 rounded-md shadow-sm"
+                class="!bg-red-500 hover:!bg-red-600 !text-white !p-3 rounded-md shadow-sm"
                 (click)="deleteTransaction(tx)"
               ></button>
             </div>
