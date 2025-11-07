@@ -5,15 +5,15 @@ import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { TransactionFormComponent } from '../transaction-form/transaction-form.component';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import { Transaction } from '../../models/transaction.model';
+import { PageHeaderComponent } from "../../../../shared/components/page-header/page-header.component";
+import { ActionButtonsComponent } from "../../../../shared/components/action-buttons/action-buttons.component";
+import { ConfirmDialogComponent } from "../../../../shared/components/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'app-transaction-page',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, FormsModule, DialogModule, TransactionFormComponent,ConfirmDialogModule],
-  providers: [ConfirmationService, MessageService],
+  imports: [CommonModule, TableModule, ButtonModule, FormsModule, DialogModule, TransactionFormComponent, PageHeaderComponent, ActionButtonsComponent, ConfirmDialogComponent],
   templateUrl: './transaction-page.component.html',
   styleUrl: './transaction-page.component.scss'
 })
@@ -23,8 +23,10 @@ export class TransactionPageComponent {
   isDialogVisible = false;
   isEditMode = false;
   selectedTransaction: any = null;
+  isConfirmVisible = false;
+  transactionToDelete: any = null;
 
-  constructor(private confirmService: ConfirmationService) {
+  constructor() {
     // Mock Data
     this.transactions = [
       { transactionId: 'T1', transactionDate: '2025-10-12', categoryName: 'Salary', categoryType: 'Income', description: 'Monthly Salary', amount: 50000 },
@@ -61,13 +63,24 @@ export class TransactionPageComponent {
 
   deleteTransaction(transaction: any) {
     debugger;
-    this.confirmService.confirm({
-      message: `Are you sure you want to delete "${transaction.categoryName}"?`,
-      header: 'Confirm Delete',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.transactions = this.transactions.filter(t => t.transactionId !== transaction.transactionId);
-      }
-    });
+    this.transactionToDelete = transaction;
+    this.isConfirmVisible = true;
+
   }
+
+  onDeleteConfirmed() {
+    if (this.transactionToDelete) {
+      this.transactions = this.transactions.filter(
+        t => t.transactionId !== this.transactionToDelete.transactionId
+      );
+      this.transactionToDelete = null;
+    }
+    this.isConfirmVisible = false;
+  }
+
+  onDeleteCancelled() {
+    this.transactionToDelete = null;
+    this.isConfirmVisible = false;
+  }
+
 }

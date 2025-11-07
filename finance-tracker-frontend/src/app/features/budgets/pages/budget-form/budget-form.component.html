@@ -1,0 +1,148 @@
+<div class="bg-white p-8 max-w-xl mx-auto rounded-xl shadow-md">
+  <!-- Header -->
+  <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
+    {{ isEditMode ? 'Edit Budget' : 'Add Budget' }}
+  </h2>
+
+  <form *ngIf="budgetForm" [formGroup]="budgetForm" (ngSubmit)="submitForm()" class="space-y-6 text-gray-800">
+
+    <!-- Name -->
+    <div>
+      <label class="block font-semibold mb-2">Budget Name</label>
+      <input
+        type="text"
+        pInputText
+        placeholder="Enter budget name"
+        formControlName="name"
+        class="w-full !border !border-gray-300 !rounded-lg !px-4 !py-2.5 focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500 transition-all duration-200"
+      />
+      <small *ngIf="budgetForm.get('name')?.invalid && budgetForm.get('name')?.touched" class="text-red-600 font-medium">
+        Budget name is required.
+      </small>
+    </div>
+
+    <!-- Category -->
+    <div>
+      <label class="block font-semibold mb-2">Category</label>
+      <p-select
+        [options]="categoryOptions"
+        formControlName="categoryId"
+        placeholder="Select category"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full !border !border-gray-300 !rounded-lg focus:!ring-2 focus:!ring-blue-500"
+      ></p-select>
+      <small
+        *ngIf="budgetForm.get('categoryId')?.invalid && budgetForm.get('categoryId')?.touched"
+        class="text-red-600 font-medium"
+      >
+        Category is required.
+      </small>
+    </div>
+
+    <!-- Note -->
+    <div>
+      <label class="block font-semibold mb-2">Note</label>
+      <textarea
+        pInputTextarea
+        rows="3"
+        formControlName="note"
+        placeholder="Add a note about this budget"
+        class="w-full !border !border-gray-300 !rounded-lg !px-4 !py-2.5 resize-none focus:!ring-2 focus:!ring-blue-500 transition-all duration-200"
+      ></textarea>
+      <small *ngIf="budgetForm.get('note')?.invalid && budgetForm.get('note')?.touched" class="text-red-600 font-medium">
+        Note is required.
+      </small>
+    </div>
+
+    <!-- Budget Amount -->
+    <div>
+      <label class="block font-semibold mb-2">Budget Amount (₹)</label>
+      <p-inputNumber
+        formControlName="budgetAmount"
+        mode="currency"
+        currency="INR"
+        locale="en-IN"
+        class="w-full"
+      ></p-inputNumber>
+      <small
+        *ngIf="budgetForm.get('budgetAmount')?.invalid && budgetForm.get('budgetAmount')?.touched"
+        class="text-red-600 font-medium"
+      >
+        Enter valid budget amount.
+      </small>
+    </div>
+
+    <!-- Spend Amount -->
+    <div>
+      <label class="block font-semibold mb-2">Spend Amount (₹)</label>
+      <p-inputNumber
+        formControlName="spendAmount"
+        mode="currency"
+        currency="INR"
+        locale="en-IN"
+        class="w-full"
+      ></p-inputNumber>
+      <small
+        *ngIf="budgetForm.get('spendAmount')?.invalid && budgetForm.get('spendAmount')?.touched"
+        class="text-red-600 font-medium"
+      >
+        Enter valid spend amount.
+      </small>
+    </div>
+
+    <!-- Start Date -->
+    <div>
+      <label class="block font-semibold mb-2">Start Date</label>
+      <input
+        type="date"
+        formControlName="startDate"
+        
+        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+      />
+      <small
+        *ngIf="budgetForm.get('startDate')?.invalid && budgetForm.get('startDate')?.touched"
+        class="text-red-600 font-medium"
+      >
+        Start date is required.
+      </small>
+    </div>
+
+    <!-- End Date -->
+    <div>
+      <label class="block font-semibold mb-2">End Date</label>
+      <input
+        type="date"
+        formControlName="endDate"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+      />
+      <small
+        *ngIf="budgetForm.get('endDate')?.invalid && budgetForm.get('endDate')?.touched"
+        class="text-red-600 font-medium"
+      >
+        End date is required.
+      </small>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-3 pt-5 border-t border-gray-200 mt-4">
+      <button
+        type="button"
+        label="Cancel"
+        icon="pi pi-times"
+        class="hover:!bg-red-600 hover:!text-white !font-semibold !px-5 !py-2.5 !bg-gray-100 rounded-lg"
+        (click)="cancelForm()"
+      >
+        Cancel
+      </button>
+
+      <button
+        pButton
+        type="submit"
+        [label]="isEditMode ? 'Update' : 'Add'"
+        [icon]="isEditMode ? 'pi pi-save' : 'pi pi-plus'"
+        class="!bg-blue-600 hover:!bg-blue-700 !text-white !font-semibold !px-5 !py-2.5 shadow-md transition-all rounded-lg"
+      ></button>
+    </div>
+  </form>
+</div>

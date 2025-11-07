@@ -32,8 +32,6 @@
       <p-select [options]="typeOptions" placeholder="Select type" formControlName="categoryType" optionLabel="label"
         optionValue="value"
         class="w-full !border !border-gray-300 !rounded-lg !shadow-sm focus:!ring-2 focus:!ring-blue-500"></p-select>
-
-
       <!-- Validation Message -->
       <small *ngIf="transactionForm.get('categoryType')?.invalid && transactionForm.get('categoryType')?.touched"
         class="text-red-600 font-medium mt-1 block">

@@ -1,0 +1,40 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '90vw', maxWidth: '400px' }"
+  [draggable]="false"
+  contentStyleClass="custom-dialog-content"
+  headerStyleClass="custom-dialog-header"
+  footerStyleClass="custom-dialog-footer"
+  class="rounded-2xl overflow-hidden shadow-xl"
+>
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <h2 class="text-lg font-semibold text-gray-800 text-center w-full p-3 border-b-4 uppercase">
+      {{ title }}
+    </h2>
+  </ng-template>
+
+  <!-- Body -->
+  <div class="text-gray-700 text-center font-bold py-5 px-4">
+    {{ message }}
+  </div>
+
+  <!-- Footer -->
+  <ng-template pTemplate="footer">
+    <div class="flex justify-center gap-4 py-3 px-5 text-center">
+      <button
+        
+        class="!bg-gray-300 hover:!bg-gray-400 !text-gray-800 !px-5 !py-2 rounded-lg transition-all"
+        (click)="onCancel()"
+      >{{ cancelLabel }}</button>
+
+      <button
+        
+        class="!bg-red-500 hover:!bg-red-600 !text-white !px-5 !py-2 rounded-lg transition-all"
+        (click)="onConfirm()"
+      >{{ confirmLabel }}</button>
+    </div>
+  </ng-template>
+</p-dialog>

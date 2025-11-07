@@ -61,6 +61,7 @@ export class TransactionFormComponent implements OnInit, OnChanges {
   submitForm() {
     if (this.transactionForm.valid) {
       const formData = { ...this.transaction, ...this.transactionForm.value };
+      console.log('Budget Form submitted:', formData);
       this.formSubmit.emit(formData);
     } else {
       this.transactionForm.markAllAsTouched();

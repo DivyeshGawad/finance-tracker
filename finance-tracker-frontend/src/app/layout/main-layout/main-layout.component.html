@@ -1,4 +1,4 @@
-<div class="flex bg-gray-50">
+<div class="flex">
   <!-- 🌐 Header -->
   <header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between 
          bg-blue-700 text-white px-6 py-3 shadow-md transition-colors duration-300">
@@ -64,6 +64,11 @@
       <a routerLink="/budgets" routerLinkActive="bg-blue-600" (click)="closeSidebarOnMobile()"
         class="px-5 py-3 hover:bg-blue-500 rounded flex items-center gap-3 transition">
         <i class="pi pi-chart-bar"></i> Budgets
+      </a>
+
+      <a routerLink="/categories" routerLinkActive="bg-blue-600" (click)="closeSidebarOnMobile()"
+        class="px-5 py-3 hover:bg-blue-500 rounded flex items-center gap-3 transition">
+        <i class="pi pi-microsoft"></i> Category
       </a>
 
       <a routerLink="/reports" routerLinkActive="bg-blue-600" (click)="closeSidebarOnMobile()"
