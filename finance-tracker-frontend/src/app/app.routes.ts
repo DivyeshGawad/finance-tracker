@@ -4,9 +4,9 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 export const routes: Routes = [
 
     {
-        path:'',
-        redirectTo:"dashboard",
-        pathMatch:'full'
+        path: '',
+        redirectTo: "dashboard",
+        pathMatch: 'full'
     },
     {
         path: '',
@@ -23,6 +23,10 @@ export const routes: Routes = [
             {
                 path: "budgets",
                 loadComponent: () => import('./features/budgets/pages/budget-page/budget-page.component').then(m => m.BudgetPageComponent)
+            },
+            {
+                path: "categories",
+                loadComponent: () => import('./features/categories/pages/category-page/category-page.component').then(m => m.CategoryPageComponent)
             },
             {
                 path: "reports",
