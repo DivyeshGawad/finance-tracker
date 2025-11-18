@@ -49,7 +49,7 @@ export class TransactionFormComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['transaction'] && this.transactionForm) {
       this.transactionForm.patchValue({
-        transactionDate: this.transaction?.transactionDate || '',
+        transactionDate: this.toInputDate(this.transaction.transactionDate),
         categoryName: this.transaction?.categoryName || '',
         categoryType: this.transaction?.categoryType || '',
         description: this.transaction?.description || '',
@@ -70,5 +70,16 @@ export class TransactionFormComponent implements OnInit, OnChanges {
 
   cancelForm() {
     this.formCancel.emit();
+  }
+
+  toInputDate(dateStr: string | undefined): string {
+    if (!dateStr) return '';
+
+    const parts = dateStr.split('-'); // Format: dd-MM-yyyy
+    const day = parts[0];
+    const month = parts[1];
+    const year = parts[2];
+
+    return `${year}-${month}-${day}`; // Format: yyyy-MM-dd
   }
 }

@@ -57,7 +57,7 @@ export class BudgetFormComponent {
         budgetAmount: this.budget?.budgetAmount || '',
         spendAmount: this.budget?.spendAmount || '',
         startDate: this.toInputDate(this.budget?.startDate),
-      endDate: this.toInputDate(this.budget?.endDate)
+        endDate: this.toInputDate(this.budget?.endDate)
       });
     }
   }
@@ -89,14 +89,14 @@ export class BudgetFormComponent {
     return `${day}-${month}-${year}`;
   }
   toInputDate(dateStr: string | undefined): string {
-  if (!dateStr) return '';
+    if (!dateStr) return '';
 
-  const parts = dateStr.split('-'); // Format: dd-MM-yyyy
-  const day = parts[0];
-  const month = parts[1];
-  const year = parts[2];
+    const parts = dateStr.split('-'); // Format: dd-MM-yyyy
+    const day = parts[0];
+    const month = parts[1];
+    const year = parts[2];
 
-  return `${year}-${month}-${day}`; // Format: yyyy-MM-dd
-}
+    return `${year}-${month}-${day}`; // Format: yyyy-MM-dd
+  }
 
 }

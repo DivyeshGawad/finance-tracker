@@ -29,9 +29,9 @@ export class TransactionPageComponent {
   constructor() {
     // Mock Data
     this.transactions = [
-      { transactionId: 'T1', transactionDate: '2025-10-12', categoryName: 'Salary', categoryType: 'Income', description: 'Monthly Salary', amount: 50000 },
-      { transactionId: 'T2', transactionDate: '2025-10-13', categoryName: 'Groceries', categoryType: 'Expense', description: 'Monthly groceries', amount: 2500 },
-      { transactionId: 'T3', transactionDate: '2025-10-13', categoryName: 'Rent', categoryType: 'Expense', description: 'House rent', amount: 12000 }
+      { transactionId: 'T1', transactionDate: '12-10-2025', categoryName: 'Salary', categoryType: 'Income', description: 'Monthly Salary', amount: 50000 },
+      { transactionId: 'T2', transactionDate: '13-10-2025', categoryName: 'Groceries', categoryType: 'Expense', description: 'Monthly groceries', amount: 2500 },
+      { transactionId: 'T3', transactionDate: '13-10-2025', categoryName: 'Rent', categoryType: 'Expense', description: 'House rent', amount: 12000 }
     ];
   }
 
