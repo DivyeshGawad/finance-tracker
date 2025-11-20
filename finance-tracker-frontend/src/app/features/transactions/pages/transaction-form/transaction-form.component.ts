@@ -33,16 +33,24 @@ export class TransactionFormComponent implements OnInit, OnChanges {
     { label: 'Expense', value: 'Expense' }
   ];
 
+  categoryOptions = [
+    { label: 'Food', value: 'Food' },
+    { label: 'Entertainment', value: 'Entertainment' },
+    { label: 'Transport', value: 'Transport' },
+    { label: 'Shopping', value: 'Shopping' },
+    { label: 'Health', value: 'Health' },
+  ];
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    this.transactionForm = this.fb.group({
-      transactionDate: ['', Validators.required],
-      categoryName: ['', Validators.required],
-      categoryType: ['', Validators.required],
-      description: ['', [Validators.required, Validators.maxLength(100)]],
-      amount: ['', [Validators.required, Validators.min(1)]]
-    });
+   this.transactionForm = this.fb.group({
+  transactionDate: ['', Validators.required],
+  categoryName: ['', Validators.required],   // <-- Add this!
+  categoryType: ['', Validators.required],
+  description: ['', [Validators.required, Validators.maxLength(100)]],
+  amount: ['', [Validators.required, Validators.min(1)]]
+});
+
   }
 
   // 🔥 This is the important part
