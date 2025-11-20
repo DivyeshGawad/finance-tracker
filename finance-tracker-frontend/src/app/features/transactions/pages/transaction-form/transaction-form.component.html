@@ -16,28 +16,43 @@
     </div>
 
     <!-- Category -->
+   
     <div>
       <label class="block font-semibold mb-2">Category</label>
-      <input type="text" placeholder="Enter category name" formControlName="categoryName"
-        class="w-full !border !border-gray-300 !rounded-lg !px-4 !py-2.5 !text-gray-700 focus:!outline-none focus:!ring-2 focus:!ring-blue-500 focus:border-blue-500 transition-all duration-200" />
+      <select formControlName="categoryName" class="w-full border border-gray-300 rounded-lg shadow-sm px-3 py-3
+         text-gray-700 bg-white
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        <option  value="" disabled selected >Select Category</option>
+        <option *ngFor="let item of categoryOptions" [value]="item.value">
+          {{ item.label }}
+        </option>
+      </select>
+
       <small *ngIf="transactionForm.get('categoryName')?.invalid && transactionForm.get('categoryName')?.touched"
         class="text-red-600 font-medium">
-        Category name is required.
+        Category is required.
       </small>
     </div>
 
+
     <!-- Type -->
-    <div class="mb-4">
-      <label class="block !font-semibold mb-2 text-gray-800">Type</label>
-      <p-select [options]="typeOptions" placeholder="Select type" formControlName="categoryType" optionLabel="label"
-        optionValue="value"
-        class="w-full !border !border-gray-300 !rounded-lg !shadow-sm focus:!ring-2 focus:!ring-blue-500"></p-select>
-      <!-- Validation Message -->
+    <div>
+      <label class="block font-semibold mb-2 text-gray-800">Type</label>
+
+      <select formControlName="categoryType" class="w-full border border-gray-300 rounded-lg shadow-sm px-3 py-3
+           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        <option value="" disabled selected>Select type</option>
+        <option *ngFor="let item of typeOptions" [value]="item.value">
+          {{ item.label }}
+        </option>
+      </select>
+
       <small *ngIf="transactionForm.get('categoryType')?.invalid && transactionForm.get('categoryType')?.touched"
         class="text-red-600 font-medium mt-1 block">
         Type is required.
       </small>
     </div>
+
 
     <!-- Description -->
     <div>
@@ -66,12 +81,14 @@
     <!-- Actions -->
     <div class="flex justify-end gap-3 pt-5 border-t border-gray-200 mt-4">
       <button type="button" label="Cancel" icon="pi pi-times"
-        class="hover:!bg-red-600 hover:!text-white !font-semibold !px-5 !py-2.5 !bg-gray-100"
+        class="!bg-gradient-to-r from-red-700 to-red-400 !text-white !rounded-lg !font-semibold !px-5 !py-2.5 shadow-md transition-all"
         (click)="cancelForm()">Cancel</button>
 
-      <button pButton type="submit" [label]="isEditMode ? 'Update' : 'Add'"
+      <!-- <button pButton type="submit" [label]="isEditMode ? 'Update' : 'Add'"
         [icon]="isEditMode ? 'pi pi-save' : 'pi pi-plus'"
-        class="!bg-blue-600 hover:!bg-green-700 !text-white !font-semibold !px-5 !py-2.5 shadow-md transition-all"></button>
+        class="!bg-gradient-to-r from-emerald-600 to-green-400 !text-white  !rounded-lg !font-semibold !px-5 !py-2.5 shadow-md transition-all"></button> -->
+        <button pButton type="submit" [label]="isEditMode ? 'Update' : 'Add'"
+        class="!bg-gradient-to-r from-emerald-600 to-green-400 !text-white  !rounded-lg !font-semibold !px-5 !py-2.5 shadow-md transition-all"></button>
     </div>
   </form>
 </div>
