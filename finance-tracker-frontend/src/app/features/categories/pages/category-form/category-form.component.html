@@ -1,1 +1,61 @@
-<p>category-form works!</p>
+<div class="bg-white p-8 max-w-xl mx-auto rounded-xl shadow-md">
+  <form [formGroup]="categoryForm" class="space-y-5">
+
+    <!-- Name -->
+    <div>
+      <label class="block font-semibold mb-1">Name</label>
+      <input
+        type="text"
+        formControlName="name"
+        class="w-full border px-3 py-2 rounded-lg focus:ring focus:ring-blue-300"
+        placeholder="Enter category name"
+      />
+      <small *ngIf="categoryForm.get('name')?.touched && categoryForm.get('name')?.invalid"
+        class="text-red-600">Name is required.</small>
+    </div>
+
+    <!-- Type -->
+    <div>
+      <label class="block font-semibold mb-1">Type</label>
+
+      <p-select
+        [options]="typeOptions"
+        formControlName="type"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select type"
+        class="w-full"
+      ></p-select>
+
+      <small *ngIf="categoryForm.get('type')?.touched && categoryForm.get('type')?.invalid"
+        class="text-red-600">Type is required.</small>
+    </div>
+
+    <!-- Default Info (Read-only) -->
+    <div *ngIf="categoryForm.get('isDefault')?.value" class="bg-blue-50 p-3 rounded-lg border border-blue-200 text-blue-700 text-sm">
+      🔒 This is a system default category.  
+      <br>
+      You cannot edit or delete it.
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-end gap-3 pt-4">
+      <button
+        type="button"
+        class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg font-medium"
+        (click)="cancel()"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow"
+        (click)="submitForm()"
+        [disabled]="category?.isDefault"
+      >
+        {{ isEditMode ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</div>

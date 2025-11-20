@@ -1,0 +1,7 @@
+::ng-deep .custom-paginator .p-paginator {
+  @apply flex justify-center items-center gap-2 mt-4 text-gray-700;
+}
+
+::ng-deep .custom-paginator .p-paginator .p-paginator-pages .p-paginator-page {
+  @apply w-9 h-9 flex items-center justify-center border border-gray-300 rounded-md text-base font-medium hover:bg-blue-50 transition-all duration-200;
+}

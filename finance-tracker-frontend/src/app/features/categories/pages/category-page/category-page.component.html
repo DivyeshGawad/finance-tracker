@@ -1,1 +1,104 @@
-<p>category-page works!</p>
+<div class="bg-gray-50 px-6 sm:px-10 py-8 overflow-x-hidden">
+  <app-page-header
+    title="Categories"
+    emoji="📂"
+    placeholder="Search categories..."
+    showAddButtonText="Add Category"
+    (searchChange)="table.filterGlobal($event, 'contains')"
+    icons="pi pi-plus"
+    (addClick)="addCategory()"
+  ></app-page-header>
+
+  <div class="bg-white border border-gray-200 shadow-md rounded-lg overflow-x-auto">
+    <p-table
+      #table
+      [value]="categories"
+      [paginator]="true"
+      [rows]="5"
+      [globalFilterFields]="['name','type']"
+      sortMode="multiple"
+      [tableStyle]="{ 'min-width': '1000px' }"
+      class="text-base custom-paginator"
+    >
+      <!-- Header -->
+      <ng-template pTemplate="header">
+        <tr class="bg-blue-600 text-white uppercase text-sm">
+          <th pSortableColumn="name" class="!text-center !py-4 !px-1 !font-semibold">Name <p-sortIcon field="name"></p-sortIcon></th>
+          <th pSortableColumn="type" class="!text-center !py-4 !px-1 !font-semibold">Type <p-sortIcon field="type"></p-sortIcon></th>
+          <th class="!text-center !py-4 !px-1 !font-semibold">Category</th>
+          <th class="!text-center !py-4 !px-1 !font-semibold">Actions</th>
+        </tr>
+      </ng-template>
+
+      <!-- Body -->
+      <ng-template pTemplate="body" let-cat>
+        <tr class="border-b hover:bg-blue-50">
+          <td class="!py-2 !px-1 !text-center text-gray-800 font-medium">{{ cat.name }}</td>
+
+          <td class="!text-center !py-2 !px-1 !font-semibold"
+              [ngClass]="{
+                'text-green-600': cat.type === 'INCOME',
+                'text-red-600': cat.type === 'EXPENSE'
+              }">
+            {{ cat.type }}
+          </td>
+
+          <td class="!py-2 !px-1 !text-center text-gray-800 font-medium">
+            <span class="px-3 py-1 text-sm rounded-md font-semibold"
+              [ngClass]="cat.isDefault ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'">
+              {{ cat.isDefault ? 'Default' : 'Custom' }}
+            </span>
+          </td>
+
+          <td class="!py-2 !px-1 !text-center text-gray-800 font-medium">
+            <app-action-buttons
+              *ngIf="!cat.isDefault"
+              (edit)="editCategory(cat)"
+              (delete)="deleteCategory(cat)"
+            ></app-action-buttons>
+
+            <span *ngIf="cat.isDefault" class="!py-2 !px-1 !text-centerfont-medium text-gray-500 italic">No actions</span>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center p-6 text-gray-500 text-lg">
+            No categories found.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Mobile Tip -->
+  <p class="text-sm text-gray-500 mt-5 sm:hidden text-center">
+    💡 Scroll horizontally to view all columns.
+  </p>
+</div>
+
+  <app-confirm-dialog
+    [(visible)]="isConfirmVisible"
+    title="Delete Category"
+    message="Are you sure you want to delete this category?"
+    confirmLabel="Yes, Delete"
+    cancelLabel="Cancel"
+    (confirm)="onDeleteConfirmed()"
+    (cancel)="onDeleteCancelled()"
+  ></app-confirm-dialog>
+
+  <p-dialog
+    [(visible)]="isDialogVisible"
+    [modal]="true"
+    [closable]="false"
+    [draggable]="false"
+    [style]="{ width: '90vw', maxWidth: '450px' }"
+  >
+    <app-category-form
+      [category]="selectedCategory"
+      [isEditMode]="isEditMode"
+      (formSubmit)="handleCategorySubmit($event)"
+      (formCancel)="isDialogVisible = false"
+    ></app-category-form>
+  </p-dialog>
