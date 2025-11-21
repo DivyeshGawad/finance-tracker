@@ -23,7 +23,6 @@ export class BudgetPageComponent {
   isDialogVisible = false;
   isEditMode = false;
   selectedBudget: Budget | null = null;
-  selectedbudget: any = null;
   isConfirmVisible = false;
   budgetToDelete: any = null;
 

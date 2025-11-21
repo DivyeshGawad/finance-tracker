@@ -1,9 +1,133 @@
+<div class="bg-gray-50 min-h-screen p-6">
+<!-- Reusable Page Header -->
 <app-page-header
-title="Reports"
- emoji="💰"
-   placeholder="Search Transactions..."
-   showAddButtonText="Add Reports"
-   
-   icons="pi pi-minus"
-   
-></app-page-header>
+  [title]="'Reports'"
+  [emoji]="'📊'"
+  [showSearch]="false"
+  [showAddButton]="false"
+  [icons]="'pi pi-plus'"
+  tagLine="Insights, charts and downloadable reports for your finances." 
+>
+</app-page-header>
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <p-card class="rounded-2xl shadow-md p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500">Total Income</p>
+          <h3 class="text-2xl font-bold text-green-600">₹{{ totalIncome | number:'1.0-0' }}</h3>
+        </div>
+        <i class="pi pi-arrow-up text-3xl text-green-500"></i>
+      </div>
+    </p-card>
+
+    <p-card class="rounded-2xl shadow-md p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500">Total Expense</p>
+          <h3 class="text-2xl font-bold text-red-600">₹{{ totalExpense | number:'1.0-0' }}</h3>
+        </div>
+        <i class="pi pi-arrow-down text-3xl text-red-500"></i>
+      </div>
+    </p-card>
+
+    <p-card class="rounded-2xl shadow-md p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500">Net Balance</p>
+          <h3 class="text-2xl font-bold text-indigo-600">₹{{ netBalance | number:'1.0-0' }}</h3>
+        </div>
+        <i class="pi pi-wallet text-3xl text-indigo-500"></i>
+      </div>
+    </p-card>
+
+    <p-card class="rounded-2xl shadow-md p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500">Monthly Savings</p>
+          <h3 class="text-2xl font-bold text-yellow-600">₹{{ monthlySavings | number:'1.0-0' }}</h3>
+        </div>
+        <i class="pi pi-chart-line text-3xl text-yellow-500"></i>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white p-4 rounded-2xl shadow-sm mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+        <input type="date" [(ngModel)]="startDate" class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+        <input type="date" [(ngModel)]="endDate" class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+        <p-select [options]="categories" [(ngModel)]="selectedCategories" optionLabel="label" optionValue="value" placeholder="Select categories" multiple="true" class="w-full"></p-select>
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+        <p-select [options]="[{label:'All',value:'ALL'},{label:'Income',value:'INCOME'},{label:'Expense',value:'EXPENSE'}]" [(ngModel)]="selectedType" optionLabel="label" optionValue="value" class="w-full"></p-select>
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+        <input type="text" [(ngModel)]="searchText" placeholder="Search description or category" class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
+      <div class="md:col-span-2 flex gap-3">
+        <button type="button" label="Apply" class="!bg-blue-600 !text-white px-3 py-2 rounded-lg" (click)="applyFilters()">Apply</button>
+        <button type="button" label="Reset" class="!bg-red-600 !border !text-white px-3 py-2 rounded-lg" (click)="resetFilters()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+    <div class="lg:col-span-1 bg-white rounded-2xl p-4 shadow-sm">
+      <h4 class="text-sm font-semibold mb-2">Expenses by Category</h4>
+      <div class="h-56">
+        <p-chart type="pie" [data]="pieData" [options]="pieOptions"></p-chart>
+      </div>
+    </div>
+
+    <div class="lg:col-span-2 bg-white rounded-2xl p-4 shadow-sm">
+      <h4 class="text-sm font-semibold mb-2">Income vs Expense (Last 6 months)</h4>
+      <div class="h-56">
+        <p-chart type="line" [data]="lineData" [options]="lineOptions"></p-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white rounded-2xl shadow-md p-4 overflow-x-auto">
+    <h3 class="text-lg font-semibold mb-3">Transactions</h3>
+
+    <p-table [value]="applyFiltersToArray(transactions)" [paginator]="true" [rows]="6" [tableStyle]="{'min-width':'900px'}" class="text-base custom-paginator">
+      <ng-template pTemplate="header">
+        <tr class="bg-blue-600 text-white">
+          <th class="p-3 text-left">Date</th>
+          <th class="p-3 text-left">Category</th>
+          <th class="p-3 text-left">Description</th>
+          <th class="p-3 text-right">Amount</th>
+          <th class="p-3 text-left">Type</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-t>
+        <tr class="border-b hover:bg-gray-50">
+          <td class="p-3">{{ t.date }}</td>
+          <td class="p-3">{{ t.category }}</td>
+          <td class="p-3">{{ t.description }}</td>
+          <td class="p-3 text-right font-semibold" [ngClass]="{ 'text-green-600': t.type==='INCOME', 'text-red-600': t.type==='EXPENSE' }">₹{{ t.amount | number:'1.0-0' }}</td>
+          <td class="p-3" [ngClass]="{ 'text-green-600': t.type==='INCOME', 'text-red-600': t.type==='EXPENSE' }">{{ t.type }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

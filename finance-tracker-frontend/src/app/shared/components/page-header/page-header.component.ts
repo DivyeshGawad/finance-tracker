@@ -19,6 +19,7 @@ export class PageHeaderComponent {
   @Input() showSearch: boolean = true;
   @Input() showAddButton: boolean = true;
   @Input() icons:string='';
+  @Input() tagLine:string='';
 
   // Outputs send events OUT to parent components
   @Output() searchChange = new EventEmitter<string>();
