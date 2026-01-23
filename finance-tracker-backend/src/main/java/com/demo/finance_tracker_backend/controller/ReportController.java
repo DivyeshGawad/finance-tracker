@@ -6,10 +6,7 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.demo.finance_tracker_backend.dto.ApiResponse;
 import com.demo.finance_tracker_backend.dto.ReportBudgetResponse;
@@ -25,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class ReportController {
 
 	private final ReportService reportService;
